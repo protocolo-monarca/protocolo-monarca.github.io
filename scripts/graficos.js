@@ -7,7 +7,7 @@ function drawRadar(datas) {
 
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    const radius = 130;
+    const radius = 110;
     let maxValue = 10;
 
     const maxValueData = Math.max(...Object.values(datas))
@@ -76,7 +76,7 @@ function drawRadar(datas) {
 
     // NOMES (labels)
     ctx.fillStyle = "#e2e8f0";
-    ctx.font = "16px Arial";
+    ctx.font = remToPx(1.5).toString() + "px Arial";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 

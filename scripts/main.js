@@ -202,14 +202,9 @@ function updateStatus() {
     document.getElementById("xpBar").style.width = percent + "%";
 }
 
-function toggleMission(element) {
-    document.querySelectorAll(".mission-body").forEach(el => {
-        if (el !== element.querySelector(".mission-body")) {
-            el.style.maxHeight = null;
-        }
-    });
-
-    const body = element.querySelector(".mission-body");
-
-    body.style.maxHeight = body.style.maxHeight ? null : body.scrollHeight + "px";
+function remToPx(value) {
+    const rem = parseFloat(
+        getComputedStyle(document.documentElement).fontSize
+    );
+    return value * rem;
 }
