@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Protocolo Monarca</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/login.css">
+    <link rel="stylesheet" href="styles/loader.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+    <div id="loader">
+        <div class="card">
+            <div class="spinner"></div>
+            <p>Acessando sistema...</p>
+        </div>
+    </div>
+    <script src="scripts/loader.js"></script>
+
+    <div class="login-container card" id="loginScreen">
+        <div class="login-box">
+            <h2 style="font-size: 27px;">Bem vindo ao</h2>
+            <h2>Protocolo Monarca</h2>
+
+            <hr class="divider">
+            <button class="google-btn" onclick="loginGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg">
+                Entrar com Google
+            </button>
+        </div>
+    </div>
+    <div id="system_interface">
+        <button class="menu-btn button" onclick="toggleSidebar()">☰</button>
+        <h1>Interface do Sistema</h1>
+        <div class="container">
+            <div class="container_vertical">
+                <div id="status_card" class="card">
+                    <h2>Status</h2>
+                    <hr class="divider">
+                    <p>Nome: <span id="player_name">Jogador</span></p>
+                    <p>Nível: <span id="level">1</span></p>
+                    <p>XP: <span id="xp">0</span> / <span id="xpMax">100</span></p>
+                    <div class="bar">
+                        <div class="bar-fill" id="xpBar"></div>
+                    </div>
+                </div>
+
+                <div id="atr_card" class="card" style="text-align: center;">
+                    <h2>Atributos</h2>
+                    <hr class="divider">
+                    <canvas id="radarChart" width="400" height="400"></canvas>
+                    <script src="scripts/graficos.js"></script>
+                </div>
+            </div>
+            <div class="container_vertical">
+                <div id="missions_card" class="card">
+                    <h2>Missões</h2>
+                    <hr class="divider">
+                    <ul class="mission-list">
+                    </ul>
+                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">Criar Nova
+                        Missão</button>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar hidden" id="sidebar">
+            <ul>
+                <li class="menu-item desactive" onclick="toggleMenu()">
+                    <i data-lucide="settings"></i>Configurações<span id="arrow">></span>
+                </li>
+                <li class="" onclick="open_system_window('Recompensas')">
+                    <i data-lucide="trophy"></i>Recompensas
+                </li>
+                <li class="" onclick="open_system_window('Penalidades')">
+                    <i data-lucide="octagon-alert"></i>Penalidades
+                </li>
+                <a href="https://api.whatsapp.com/send?phone=554591451502&text=Tenho+algo+a+dizer+ao+administrador+do+Protocolo+Monarca"
+                    target="_blank">
+                    <li onclick="">
+                        <i data-lucide="send"></i>Feedback
+                    </li>
+                </a>
+                <li onclick="window.logout()">
+                    <i data-lucide="log-out"></i>Logout
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+
+<script src="scripts/main.js"></script>
+<script src="scripts/system_window.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+<script src="scripts/sidebar.js"></script>
+<script type="module" src="scripts/firebase.js"></script>
+
+</html>
