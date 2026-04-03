@@ -13,7 +13,7 @@
     --cor-text: white;
     --cor-text-inative: rgb(115, 115, 115);
 
-    --font-size: 2.5rem;
+    --font-size: 2rem;
 }
 
 ::-webkit-scrollbar {
@@ -170,6 +170,11 @@ h1 {
     min-width: 25rem;
 }
 
+#radarChart {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
 #missions_card {
     /* grid-column: span 2; */
     /* grid-row: span 2; */
@@ -228,7 +233,7 @@ button:hover {
     font-size: var(--font-size);
     /* border: none; */
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.1rem 0.50rem;
     z-index: 1000;
     box-shadow:
         0 0 1rem var(--cor-neon-2),
@@ -238,6 +243,8 @@ button:hover {
 /* Sidebar */
 .sidebar {
     position: fixed;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     top: 0;
     left: 0;
     width: 250px;
@@ -245,7 +252,8 @@ button:hover {
     background: var(--cor-card);
     border-right: 2px solid var(--cor-neon-0);
     transition: 0.3s;
-    padding-top: 80px;
+    padding-top: calc(var(--font-size) + 3rem);
+    z-index: 100;
     box-shadow:
         0 0 20px var(--cor-neon-2);
     /* inset 3px 0 8px var(--cor-neon-2); */
@@ -260,10 +268,11 @@ button:hover {
 .sidebar ul {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .sidebar li {
-    padding: 15px 20px;
+    padding: 1rem 1.2rem;
     color: var(--cor-text);
     cursor: pointer;
     display: flex;
@@ -273,12 +282,6 @@ button:hover {
 
 .sidebar li:hover {
     background: var(--cor-neon-2);
-}
-
-.sidebar i {
-    width: 20px;
-    height: 20px;
-    color: #22d3ee;
 }
 
 .desactive {

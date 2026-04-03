@@ -7,7 +7,7 @@ function drawRadar(datas) {
 
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    const radius = 110;
+    const radius = 150;
     let maxValue = 10;
 
     const maxValueData = Math.max(...Object.values(datas))

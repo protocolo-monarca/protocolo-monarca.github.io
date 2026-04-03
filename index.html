@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/login.css">
     <link rel="stylesheet" href="styles/loader.css">
+
+    <link rel="stylesheet" href="styles/mobile.css" media="(max-width: 1000px)">
+
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 
@@ -50,7 +53,7 @@
                 <div id="atr_card" class="card" style="text-align: center;">
                     <h2>Atributos</h2>
                     <hr class="divider">
-                    <canvas id="radarChart" width="400" height="400"></canvas>
+                    <canvas id="radarChart" width="500" height="500"></canvas>
                     <script src="scripts/graficos.js"></script>
                 </div>
             </div>
@@ -68,22 +71,22 @@
         <div class="sidebar hidden" id="sidebar">
             <ul>
                 <li class="menu-item desactive" onclick="toggleMenu()">
-                    <i data-lucide="settings"></i>Configurações<span id="arrow">></span>
+                    <i class="_icon_" data-lucide="settings"></i>Configurações<span id="arrow">></span>
                 </li>
                 <li class="" onclick="open_system_window('Recompensas')">
-                    <i data-lucide="trophy"></i>Recompensas
+                    <i class="_icon_" data-lucide="trophy"></i>Recompensas
                 </li>
                 <li class="" onclick="open_system_window('Penalidades')">
-                    <i data-lucide="octagon-alert"></i>Penalidades
+                    <i class="_icon_" data-lucide="octagon-alert"></i>Penalidades
                 </li>
                 <a href="https://api.whatsapp.com/send?phone=554591451502&text=Tenho+algo+a+dizer+ao+administrador+do+Protocolo+Monarca"
                     target="_blank">
                     <li onclick="">
-                        <i data-lucide="send"></i>Feedback
+                        <i class="_icon_" data-lucide="send"></i>Feedback
                     </li>
                 </a>
                 <li onclick="window.logout()">
-                    <i data-lucide="log-out"></i>Logout
+                    <i class="_icon_" data-lucide="log-out"></i>Logout
                 </li>
             </ul>
         </div>

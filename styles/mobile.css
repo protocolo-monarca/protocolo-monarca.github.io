@@ -1,0 +1,33 @@
+.container {
+    flex-direction: column;
+    width: 80vw;
+}
+
+#sidebar {
+    width: 90vw;
+    padding-top: calc(var(--font-size) + 4rem);
+}
+
+
+.sidebar li {
+    font-size: 2rem;
+}
+
+.sidebar ._icon_ {
+    width: 3rem;
+    height: 3rem;
+}
+
+.menu-btn {
+    top: 0px;
+    left: 0px;
+    font-size: 4rem;
+}
+
+.sidebar li:hover {
+    background: none;
+}
+
+button:hover {
+    background: var(--cor-card);
+}

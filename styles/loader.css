@@ -20,8 +20,8 @@
 .spinner {
     width: 10rem;
     height: 10rem;
-    border: 0.3rem solid var(--cor-neon-3);
-    border-top: 0.3rem solid var(--cor-neon-0);
+    border: 1rem solid var(--cor-neon-3);
+    border-top: 1rem solid var(--cor-neon-0);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
