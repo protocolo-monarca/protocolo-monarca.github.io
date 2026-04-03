@@ -144,7 +144,7 @@ function updateMissions() {
             button_concluido = `<button id="${idMission}" onclick="finishMission(this.id, true)">Concluído</button>`
             button_malsucedido = `<button id="${idMission}" onclick="finishMission(this.id, false)">Malsucedido</button>`
         }
-        html_text = `<div>Título: ${mission.title}</div>`
+        html_text = `<div><div>Título: ${mission.title}</div>`
         html_text += `<hr class="mini-divider"></hr>`
         html_text += `<div>Tipo: ${mission.tipo}</div>`
         let dias_da_missao = []
@@ -179,6 +179,7 @@ function updateMissions() {
             }
         }
         html_text += `<div>Atributos: ${mission.atributos.toString().replaceAll(",", ", ")}</div>`
+        html_text += `<hr class="mini-divider"></hr></div>`
         html_text += `<div class="mission-div-button">
                         ${button_concluido}
                         <button onclick="open_system_window('Editar Missão', '${idMission}')">Editar</button>

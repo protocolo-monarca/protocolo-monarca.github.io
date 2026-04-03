@@ -263,6 +263,9 @@ window.createMission = async function (_id_ = null) {
 }
 
 window.finishMission = async (_id_, completed = true || false) => {
+    let string_alert_completed = "Concluída"
+    if (!completed) { string_alert_completed = "Malsucedida" }
+    if (!confirm(`Deseja finalizar a missão (${string_alert_completed})?`)) return;
     const missionRef = doc(db, "Users", window.uid, "missoes", _id_);
     const datas = {
         completa: [Date.now(), completed],

@@ -58,9 +58,9 @@ a {
 
 .mini-divider {
     border: none;
-    height: 0.05rem;
+    height: 0.2rem;
     background: var(--cor-inative);
-    margin: 0.05rem 0px;
+    margin: 0.5rem 0px;
 }
 
 .window_system {
@@ -207,6 +207,7 @@ button {
     padding: 0.5rem;
     border-radius: 0.5rem;
     cursor: pointer;
+    font-size: var(--font-size);
 
     border: 1px solid var(--cor-neon-1);
     /* border-radius: 12px; */
@@ -320,16 +321,21 @@ input {
 
 
 .mission-list {
+    scroll-behavior: smooth;
     list-style: none;
     max-height: 600px;
     overflow-y: auto;
     padding: 0px;
+    display: flex;
+    flex-direction: column;
 }
 
 .mission-list li {
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
     list-style: none;
     text-align: center;
+    min-height: min-content;
     overflow-y: auto;
     padding: 10px;
     margin-bottom: 10px;
@@ -346,7 +352,7 @@ input {
     background-color: var(--cor-red);
 }
 
-.mission-list li div {
+.mission-list li .mission-div-button {
     display: flex;
     justify-content: space-around;
     padding: 4px;
