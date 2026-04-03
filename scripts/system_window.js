@@ -127,7 +127,9 @@ let open_system_window = (type, _id_ = null) => {
             for (let id in window.reg_recomp) {
                 _reg_recomp_ = window.reg_recomp[id]
                 if (_reg_recomp_.dificuldade == niveis_dific[i]) {
-                    html_text += `<li id="${id}" onclick="open_system_window('Editar Recompensa' , this.id)"><strong>${_reg_recomp_.title}</strong><p>${_reg_recomp_.descricao}</p></li>`
+                    html_text += `<li id="${id}" onclick="open_system_window('Editar Recompensa' , this.id)"><strong>${_reg_recomp_.title}</strong>
+                        <hr class="mini-divider">
+                        <p>${_reg_recomp_.descricao}</p></li>`
                 }
             }
             html_text += `</ul>`
@@ -168,7 +170,9 @@ let open_system_window = (type, _id_ = null) => {
             for (let id in window.reg_penal) {
                 _reg_penal_ = window.reg_penal[id]
                 if (_reg_penal_.dificuldade == niveis_dific[i]) {
-                    html_text += `<li id="${id}" onclick="open_system_window('Editar Penalidade', this.id)"><strong>${_reg_penal_.title}</strong><p>${_reg_penal_.descricao}</p></li>`
+                    html_text += `<li id="${id}" onclick="open_system_window('Editar Penalidade', this.id)"><strong>${_reg_penal_.title}</strong>
+                        <hr class="mini-divider">
+                        <p>${_reg_penal_.descricao}</p></li>`
                 }
             }
             html_text += `</ul>`

@@ -401,9 +401,10 @@ input {
 .form-system input,
 .form-system select,
 .form-system textarea {
-    padding: 8px;
+    padding: 0.5rem;
     border-radius: 10px;
     border: 2px solid var(--cor-neon-1);
+    font-size: calc(var(--font-size) - .5rem);
     outline: none;
     margin: 0px;
 }
@@ -414,6 +415,10 @@ input {
 }
 
 .check {}
+
+#select_atributos {
+    cursor: pointer;
+}
 
 .check input {
     display: none;
@@ -450,8 +455,13 @@ input {
     width: 100%;
 }
 
+.form-system label {
+    text-align: center;
+    font-size: calc(var(--font-size) - 0.5rem);
+}
+
 .form-system textarea {
-    height: 100px;
+    height: 10rem;
     max-width: 100%;
 }
 
@@ -488,7 +498,7 @@ input {
 .system_disp li,
 .system_disp_penal li {
     text-align: center;
-    padding: 10px;
+    padding: var(--font-size);
     width: 20rem;
     min-height: 10rem;
     flex-shrink: 0;
@@ -535,11 +545,12 @@ input {
     background-color: var(--cor-neon-1);
 }
 
-.system_dificuldade li strong {
-    /* white-space: nowrap; */
+.system_dificuldade li strong,
+.system_disp li strong {
+    font-size: var(--font-size);
 }
 
 .system_dificuldade li p {
     margin: 0px;
-    font-size: 1rem;
+    font-size: calc(var(--font-size) - .5rem);
 }
