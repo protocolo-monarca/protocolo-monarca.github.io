@@ -30,7 +30,8 @@ const defaultUserData = {
         Vitalidade: 0,
         Inteligencia: 0,
         Social: 0,
-        Disciplina: 0
+        Disciplina: 0,
+        // Finanças: 0
     },
 };
 
