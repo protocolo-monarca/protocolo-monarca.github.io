@@ -11,14 +11,23 @@ body {
     width: 90vw;
 }
 
+.content_window {
+    width: 90vw;
+}
+
 #sidebar {
     width: 90vw;
     padding-top: calc(var(--font-size) + 4rem + 1rem);
 }
 
-/* button {
+button {
     font-size: calc(var(--font-size) - 2rem);
-} */
+}
+
+.form-system button {
+    margin-top: 10px;
+    font-size: calc(var(--font-size) - 2rem);
+}
 
 
 .sidebar li {

@@ -70,12 +70,12 @@ a {
     left: 0px;
     top: 0px;
     width: 100vw;
-    min-width: 70rem;
     height: 100vh;
     z-index: 99999;
 }
 
-.window_system .button {
+.window_system .close_button {
+    padding: 0.25rem 0.5rem;
     position: fixed;
     right: 1rem;
     top: 1rem;
@@ -92,6 +92,8 @@ a {
 
 .content_window {
     max-height: 90vh;
+    max-width: 85vw;
+    width: 50vw;
     overflow-y: auto;
     overflow-x: none;
     position: fixed;
@@ -103,6 +105,7 @@ a {
 #system_interface {
     display: none;
 }
+
 
 .container {
     display: flex;
@@ -225,6 +228,7 @@ button {
 button:hover {
     background: var(--cor-neon-2);
 }
+
 
 /* Botão ☰ */
 .menu-btn {
@@ -453,7 +457,7 @@ input {
 
 .form-system button {
     margin-top: 10px;
-    font-size: 1em;
+    font-size: var(--font-size);
 }
 
 .system_dificuldade,
@@ -468,7 +472,7 @@ input {
     overflow-y: hidden;
 
     padding: 10px 0;
-    max-width: 60vw;
+    width: 100%;
 
     /* impede quebrar linha */
     flex-wrap: nowrap;
@@ -485,8 +489,8 @@ input {
 .system_disp_penal li {
     text-align: center;
     padding: 10px;
-    width: 200px;
-    min-height: 100px;
+    width: 20rem;
+    min-height: 10rem;
     flex-shrink: 0;
 }
 
@@ -503,6 +507,10 @@ input {
 
 .system_disp li {
     background-color: var(--cor-green);
+}
+
+.system_disp li button {
+    font-size: calc(var(--font-size) - .5rem);
 }
 
 .system_disp_penal li {

@@ -5,7 +5,7 @@ let open_system_window = (type, _id_ = null) => {
     _system_window_.innerHTML = `
         <div class="bg_window" onclick="close_system_window('${type}')" ></div>
         <div class="content_window card">
-            <button onclick="close_system_window('${type}')" class="button"> X </button>
+            <button class="close_button" onclick="close_system_window('${type}')" class="button"> X </button>
             <h2>Title</h2>
             <hr class="divider">
         </div>`
