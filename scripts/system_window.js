@@ -299,7 +299,7 @@ let open_system_window = (type, _id_ = null) => {
         const atributos_inputs = document.querySelectorAll("#select_atributos input");
         for (let atr_input in window.missoes[_id_].atributos) {
             const atributo = window.missoes[_id_].atributos[atr_input]
-            atributos_inputs[Object.keys(window.datas.atributo).indexOf(atributo)].checked = true
+            atributos_inputs[Object.keys(window.datas.atributos).indexOf(atributo)].checked = true
         }
     } else if (type == "Editar Status") {
         document.getElementById("input_edit_name").value = window.datas.name
