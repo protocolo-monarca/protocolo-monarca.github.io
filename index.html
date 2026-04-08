@@ -89,7 +89,12 @@
         <div class="container">
             <div class="container_vertical">
                 <div id="status_card" class="card">
-                    <h2>Status</h2>
+                    <div>
+                        <h2>Status</h2>
+                        <button onclick="open_system_window('Editar Status')">
+                            <i class="_icon_" data-lucide="pen"></i>
+                        </button>
+                    </div>
                     <hr class="divider">
                     <p>Nome: <span id="player_name">Jogador</span></p>
                     <p>Nível: <span id="level">1</span></p>
@@ -100,7 +105,12 @@
                 </div>
 
                 <div id="atr_card" class="card" style="text-align: center;">
-                    <h2>Atributos</h2>
+                    <div>
+                        <h2>Atributos</h2>
+                        <button onclick="open_system_window('Editar Atributos')">
+                            <i class="_icon_" data-lucide="pen"></i>
+                        </button>
+                    </div>
                     <hr class="divider">
                     <canvas id="radarChart" width="500" height="500"></canvas>
                     <script src="scripts/graficos.js"></script>

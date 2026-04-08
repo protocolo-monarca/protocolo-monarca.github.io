@@ -160,18 +160,29 @@ h1 {
 }
 
 #status_card {
-    /* grid-column: span 2; */
-    /* grid-row: span 1; */
-    /* height: min-content; */
     min-width: 25rem;
 }
 
 #atr_card {
-    /* grid-column: span 2; */
-    /* grid-row: span 2; */
-    /* min-width: 10rem; */
     min-width: 25rem;
 }
+
+#atr_card div button,
+#status_card div button {
+    position: absolute;
+    padding: 0px;
+    right: 2.5rem;
+    top: 2rem;
+    width: calc(var(--font-size)*1.5);
+    height: calc(var(--font-size)*1.5);
+}
+
+#atr_card div button ._icon_,
+#status_card div button ._icon_ {
+    width: var(--font-size);
+    height: var(--font-size);
+}
+
 
 #radarChart {
     width: 100%;
