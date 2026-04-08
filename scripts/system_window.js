@@ -25,6 +25,18 @@ let open_system_window = (type, _id_ = null) => {
             function_button = `createMission('${_id_}')`
             button_delete = `<button onclick="deleteMission('${_id_}')">Excluir</button>`
         }
+
+        let atrib_keys = Object.keys(window.datas.atributos)
+        let atributos_label = ``
+        for (let i = 0; i < atrib_keys.length; i++) {
+            atrib_key = atrib_keys[i]
+            atributos_label += `
+            <label class="check">
+                <input type="checkbox" value="${atrib_key}">
+                <span>${atrib_key}</span>
+            </label>`
+        }
+
         form_system.innerHTML = `
             <div>
                 <label>Título</label>
@@ -72,26 +84,7 @@ let open_system_window = (type, _id_ = null) => {
             </div>
             <textarea id="mission_desc_penal" placeholder="Descrição da Penalidade" style="pointer-events: none; color: var(--cor-text-inative)"></textarea>
             <div id="select_atributos">
-                <label class="check">
-                    <input type="checkbox" value="Disciplina">
-                    <span>Disciplina</span>
-                </label>
-                <label class="check">
-                    <input type="checkbox" value="Força">
-                    <span>Força</span>
-                </label>
-                <label class="check">
-                    <input type="checkbox" value="Inteligencia">
-                    <span>Inteligencia</span>
-                </label>
-                <label class="check">
-                    <input type="checkbox" value="Social">
-                    <span>Social</span>
-                </label>
-                <label class="check">
-                    <input type="checkbox" value="Vitalidade">
-                    <span>Vitalidade</span>
-                </label>
+                ${atributos_label}
             </div>
 
             <button id="" onclick="${function_button}">${type}</button>${button_delete}`;
@@ -278,10 +271,9 @@ let open_system_window = (type, _id_ = null) => {
         updateMissionPenal()
 
         const atributos_inputs = document.querySelectorAll("#select_atributos input");
-        let atributos_list = ["Disciplina", "Força", "Inteligencia", "Social", "Vitalidade"]
         for (let atr_input in window.missoes[_id_].atributos) {
             const atributo = window.missoes[_id_].atributos[atr_input]
-            atributos_inputs[atributos_list.indexOf(atributo)].checked = true
+            atributos_inputs[Object.keys(window.datas.atributo).indexOf(atributo)].checked = true
         }
     }
 }

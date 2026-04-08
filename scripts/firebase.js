@@ -24,15 +24,6 @@ const defaultUserData = {
     level: 1,
     xp: 0,
     email: "",
-
-    atributos: {
-        Força: 0,
-        Vitalidade: 0,
-        Inteligencia: 0,
-        Social: 0,
-        Disciplina: 0,
-        // Finanças: 0
-    },
 };
 
 // Initialize Firebase
@@ -79,6 +70,7 @@ let getDataDB = async (_collection_, _object_) => {
 onAuthStateChanged(auth, async (user) => {
     open_loader_screen()
     // document.getElementById("loader").style.display = "fixed";
+    window.currentUser = user
 
     if (user) {
         const uid = user.uid;
@@ -90,64 +82,11 @@ onAuthStateChanged(auth, async (user) => {
         if (!userSnap.exists()) {
             // console.log("Primeiro login, criando usuário...");
 
-            await setDoc(userRef, {
-                ...defaultUserData,
-                name: user.displayName,
-                email: user.email
-            });
+            document.getElementById("signin").style.display = "flex"
+            document.getElementById("creator_name").value = user.displayName
 
-            // Penalidade Padrão
-            let ref = collection(db, "Users", window.uid, "reg_penal");
-            const newPenal = {
-                title: "Pequena penalidade",
-                descricao: "15 flexões",
-                dificuldade: niveis_dific[0],
-                admin: true
-            };
-            const penal_doc_ref = await addDoc(ref, newPenal);
-
-            // Recompensa Padrao
-            ref = collection(db, "Users", window.uid, "reg_recomp");
-            const newRecomp = {
-                title: "Descanso Curto",
-                descricao: "5 min de pausa",
-                dificuldade: niveis_dific[0],
-                admin: true
-            };
-            let recomp_doc_ref = await addDoc(ref, newRecomp);
-
-            // Missao Padrão
-            // ref = collection(db, "Users", window.uid, "missoes");
-            // const newMission = {
-            //     title: "Treinamento de Força",
-            //     tipo: "Diária",
-            //     repeat: [],
-            //     dificuldade: niveis_dific[0],
-            //     prazo: "",
-            //     descricao: `- 10 flexoes,
-            //     - 10 abdominais,
-            //     - 10 agachamentos,
-            //     - 1km de corrida`,
-            //     recompensa: IDrecomp_doc_ref,
-            //     penalidade: IDpenal_doc_ref,
-            //     data: Date.now(),
-            //     atributos: ["Disciplina", "Força", "Vitalidade"],
-            //     completa: [] // data, true // // data, false
-            // };
-            // const IDmissao_doc_ref = await addDoc(ref, newMission).id;
-
-            // console.log("Usuário criado!");
-
-            window.datas = {
-                ...defaultUserData,
-                name: user.displayName,
-                email: user.email
-            };
-            window.reg_recomp = {}
-            window.reg_penal = {}
-            window.reg_recomp[recomp_doc_ref.id] = newRecomp
-            window.reg_penal[penal_doc_ref.id] = newPenal
-            window.missoes = {}
+            document.getElementById("loginScreen").style.display = "none";
+            close_loader_screen()
         } else {
             window.datas = userSnap.data();
             // console.log("Usuário já existe");
@@ -156,24 +95,124 @@ onAuthStateChanged(auth, async (user) => {
             window.missoes = await getDataDB("missoes", {});
             window.recompensas = await getDataDB("recompensas", {});
             window.penalidades = await getDataDB("penalidades", {});
+
+            window.loadInterface()
         }
-
-        document.getElementById("loginScreen").style.display = "none";
-        document.getElementById("player_name").innerText = user.displayName
-        document.getElementById("system_interface").style.display = "block";
-        // console.log("Logado:", user.displayName);
-        updateStatus()
-        updateMissions()
-        drawRadar(window.datas.atributos);
-
-        close_loader_screen()
-        setInterval(mainLoop, 30000);
-        window.mainLoop()
     } else {
         document.getElementById("loginScreen").style.display = "block";
         close_loader_screen()
     }
 });
+
+window.loadInterface = () => {
+    const user = window.currentUser
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("player_name").innerText = user.displayName
+    document.getElementById("system_interface").style.display = "block";
+    // console.log("Logado:", user.displayName);
+    updateStatus()
+    updateMissions()
+    drawRadar(window.datas.atributos);
+
+    close_loader_screen()
+    setInterval(mainLoop, 30000);
+    window.mainLoop()
+
+}
+
+// CRIAR JOGADOR
+window.createPlayer = async () => {
+    const userRef = doc(db, "Users", uid);
+    const userSnap = await getDoc(userRef);
+    const user = window.currentUser
+
+    const player_name_elem = document.getElementById("creator_name")
+    const player_name = player_name_elem.value
+    const create_atributos = document.querySelectorAll(".atributo_name")
+    let atributos = {}
+    for (let i = 0; i < create_atributos.length; i++) {
+        let atributo = create_atributos[i]
+        atributos[atributo.innerText] = 0
+    }
+
+    if (!player_name) {
+        player_name_elem.style.borderColor = "red"
+        return
+    } else {
+        player_name_elem.style.borderColor = ""
+    }
+
+    if (Object.keys(atributos).length < 3) {
+        alert("Mínimo 3 Atributos!")
+        return
+    }
+
+    await setDoc(userRef, {
+        ...defaultUserData,
+        name: player_name,
+        email: user.email,
+        atributos: atributos
+    });
+
+    document.getElementById("signin").style.display = "none"
+    open_loader_screen()
+
+    // Penalidade Padrão
+    let ref = collection(db, "Users", window.uid, "reg_penal");
+    const newPenal = {
+        title: "Pequena penalidade",
+        descricao: "15 flexões",
+        dificuldade: niveis_dific[0],
+        admin: true
+    };
+    const penal_doc_ref = await addDoc(ref, newPenal);
+
+    // Recompensa Padrao
+    ref = collection(db, "Users", window.uid, "reg_recomp");
+    const newRecomp = {
+        title: "Descanso Curto",
+        descricao: "5 min de pausa",
+        dificuldade: niveis_dific[0],
+        admin: true
+    };
+    let recomp_doc_ref = await addDoc(ref, newRecomp);
+
+    // Missao Padrão
+    // ref = collection(db, "Users", window.uid, "missoes");
+    // const newMission = {
+    //     title: "Treinamento de Força",
+    //     tipo: "Diária",
+    //     repeat: [],
+    //     dificuldade: niveis_dific[0],
+    //     prazo: "",
+    //     descricao: `- 10 flexoes,
+    //     - 10 abdominais,
+    //     - 10 agachamentos,
+    //     - 1km de corrida`,
+    //     recompensa: IDrecomp_doc_ref,
+    //     penalidade: IDpenal_doc_ref,
+    //     data: Date.now(),
+    //     atributos: ["Disciplina", "Força", "Vitalidade"],
+    //     completa: [] // data, true // // data, false
+    // };
+    // const IDmissao_doc_ref = await addDoc(ref, newMission).id;
+
+    // console.log("Usuário criado!");
+
+    window.datas = {
+        ...defaultUserData,
+        name: user.displayName,
+        email: user.email,
+        atributos: atributos
+    };
+    window.reg_recomp = {}
+    window.reg_penal = {}
+    window.reg_recomp[recomp_doc_ref.id] = newRecomp
+    window.reg_penal[penal_doc_ref.id] = newPenal
+    window.missoes = {}
+
+    loadInterface()
+}
 
 // LOGOUT (opcional)
 window.logout = function () {

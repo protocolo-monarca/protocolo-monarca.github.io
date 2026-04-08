@@ -418,6 +418,7 @@ input {
 
 #select_atributos {
     cursor: pointer;
+    flex-wrap: wrap;
 }
 
 .check input {

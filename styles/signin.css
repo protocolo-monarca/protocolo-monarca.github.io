@@ -1,0 +1,42 @@
+#signin {
+    display: none;
+    margin: auto;
+    align-items: center;
+    justify-self: center;
+}
+
+#creator_name,
+#creator_atributo {
+    width: 100%;
+}
+
+#signin .form-system div div div {
+    width: 10em;
+}
+
+#creator_atributos_div {
+    display: block;
+    gap: 10px;
+}
+
+#creator_atributos_div button {
+    margin-top: 0px;
+}
+
+#creator_atributos_div div {
+    /* display: flex; */
+}
+
+#create_atributos {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    /* justify-self: right; */
+    /* text-align: right; */
+}
+
+#create_atributos div {
+    margin: auto;
+    display: block;
+    position: relative;
+}
