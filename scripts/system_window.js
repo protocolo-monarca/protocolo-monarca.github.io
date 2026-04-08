@@ -226,19 +226,45 @@ let open_system_window = (type, _id_ = null) => {
             </div>
             <textarea id="create-penal-desc" placeholder="Descrição da Penalidade"></textarea>
             <button onclick="${function_button}">${type}</button>${button_delete}`;
+    } else if (type == "Editar Status") {
+        form_system.innerHTML = `
+            <div>
+                <label>Nome: </label>
+                <input type="text" id="input_edit_name" class="form-title-create" >
+            </div>
+            <button onclick="editStatus()">Salvar</button>`;
+
+        content_window.style.width = "40rem"
+    } else if (type == "Editar Atributos") {
+        let atributos = ``
+        let atrib_list = Object.keys(window.datas.atributos)
+        for (let i = 0; i < atrib_list.length; i++) {
+            atributos += `<div>
+                            <button class="atributo_name" onclick="remove_atrib(this)">${atrib_list[i]}<i class="_icon_" data-lucide="x"></i></button>
+                        </div>`
+        }
+
+        form_system.innerHTML = `
+                    <div>
+                        <label>Atributos:</label>
+                        <input type="text" id="input_edit_atributo"><button onclick="add_atrib(this)">Adicionar</button>
+                    </div>
+                    <div id="create_atributos">
+                        ${atributos}
+                    </div>
+            <button onclick="editAtrib()">Salvar</button>`;
+        content_window.style.width = "40rem"
     }
     content_window.appendChild(form_system);
     if (type == "Editar Recompensa") {
         document.getElementById("create-recomp-title").value = window.reg_recomp[_id_].title
         document.getElementById("create-recomp-dificuldade").value = window.reg_recomp[_id_].dificuldade
         document.getElementById("create-recomp-desc").value = window.reg_recomp[_id_].descricao
-    }
-    if (type == "Editar Penalidade") {
+    } else if (type == "Editar Penalidade") {
         document.getElementById("create-penal-title").value = window.reg_penal[_id_].title
         document.getElementById("create-penal-dificuldade").value = window.reg_penal[_id_].dificuldade
         document.getElementById("create-penal-desc").value = window.reg_penal[_id_].descricao
-    }
-    if (type == "Editar Missão") {
+    } else if (type == "Editar Missão") {
         document.getElementById("create-mission-title").value = window.missoes[_id_].title
         document.getElementById("create-missao-desc").value = window.missoes[_id_].descricao
 
@@ -275,7 +301,10 @@ let open_system_window = (type, _id_ = null) => {
             const atributo = window.missoes[_id_].atributos[atr_input]
             atributos_inputs[Object.keys(window.datas.atributo).indexOf(atributo)].checked = true
         }
+    } else if (type == "Editar Status") {
+        document.getElementById("input_edit_name").value = window.datas.name
     }
+    lucide.createIcons()
 }
 
 let close_system_window = (type) => {

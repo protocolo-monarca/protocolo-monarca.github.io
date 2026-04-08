@@ -113,6 +113,12 @@ window.loadInterface = () => {
     updateStatus()
     updateMissions()
     drawRadar(window.datas.atributos);
+    try {
+        document.body.removeChild(document.getElementById("signin"))
+    } catch (error) {
+        console.log(error)
+    }
+
 
     close_loader_screen()
     setInterval(mainLoop, 30000);
@@ -214,6 +220,52 @@ window.createPlayer = async () => {
     loadInterface()
 }
 
+window.editStatus = async () => {
+    const name_elem = document.getElementById("input_edit_name")
+    const name = name_elem.value
+
+    if (!name) {
+        name_elem.style.borderColor = "red"
+        return
+    } else {
+        name_elem.style.borderColor = ""
+    }
+
+    const ref = doc(db, "Users", window.uid);
+    window.datas.name = name
+    await updateDoc(ref, window.datas);
+    close_system_window("Editar Status")
+
+    updateStatus();
+}
+
+window.editAtrib = async () => {
+    const create_atributos = document.querySelectorAll(".atributo_name")
+    let atributos = {}
+    for (let i = 0; i < create_atributos.length; i++) {
+        let atributo = create_atributos[i].innerText
+        atributos[atributo] = 0
+
+        if (Object.keys(window.datas.atributos).includes(atributo)) {
+            atributos[atributo] = window.datas.atributos[atributo]
+        }
+    }
+
+    if (!confirm(`O progresso do(s) atributo(s) deletado(s) serão apagados, deseja continuar?`)) { return };
+    if (Object.keys(atributos).length < 3) {
+        alert("Mínimo 3 Atributos!")
+        return
+    }
+
+    const ref = doc(db, "Users", window.uid);
+
+    window.datas.atributos = atributos
+    await updateDoc(ref, window.datas);
+    close_system_window("Editar Atributos")
+
+    drawRadar(window.datas.atributos);
+}
+
 // LOGOUT (opcional)
 window.logout = function () {
     signOut(auth);
@@ -305,7 +357,7 @@ window.createMission = async function (_id_ = null) {
 window.finishMission = async (_id_, completed = true || false) => {
     let string_alert_completed = "Concluída"
     if (!completed) { string_alert_completed = "Malsucedida" }
-    if (!confirm(`Deseja finalizar a missão (${string_alert_completed})?`)) return;
+    if (!confirm(`Deseja finalizar a missão (${string_alert_completed})?`)) { return };
     const missionRef = doc(db, "Users", window.uid, "missoes", _id_);
     const datas = {
         completa: [Date.now(), completed],
