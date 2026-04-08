@@ -107,7 +107,7 @@ onAuthStateChanged(auth, async (user) => {
 window.loadInterface = () => {
     const user = window.currentUser
     document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("player_name").innerText = user.displayName
+    document.getElementById("player_name").innerText = window.datas.name
     document.getElementById("system_interface").style.display = "block";
     // console.log("Logado:", user.displayName);
     updateStatus()
