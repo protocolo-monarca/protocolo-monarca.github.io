@@ -32,7 +32,7 @@ function diffDias(data1, data2) {
     return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
-function diffHoras(data1, data2) {
+window.diffHoras = (data1, data2) => {
     const diff = Math.abs(new Date(data2) - new Date(data1));
 
     let h = Math.floor(diff / (1000 * 60 * 60));
@@ -44,7 +44,6 @@ function diffHoras(data1, data2) {
 function mainLoop() {
     let clock_hoje = new Date().setHours(0, 0, 0, 0);
     Object.entries(window.missoes).forEach(([id, missao]) => {
-        let now = new Date()
         if (missao.tipo != list_type[0]) { // Missoes que tem repeticoes
             let clock_finish_mission = null
             if (missao.last_finish != null) {
@@ -104,8 +103,6 @@ function mainLoop() {
                     }
                 }
             }
-            // let label_timer = document.getElementById("timer_" + id)
-            // label_timer.innerText = diffHoras(change_data(clock_hoje, 1), setHours(now.getTime(), [now.getHours(), now.getMinutes(), 0, 0]))
         }
     });
 }
@@ -216,7 +213,14 @@ function updateMissions() {
 
         li.innerHTML = html_text
         mission_list.appendChild(li)
-        // html_text += 
+
+        // Tempo Restante
+        let clock_hoje = new Date().setHours(0, 0, 0, 0);
+        let now = new Date()
+        let label_timer = document.getElementById("timer_" + idMission)
+        if (label_timer != null) {
+            label_timer.innerText = diffHoras(change_data(clock_hoje, 1), setHours(now.getTime(), [now.getHours(), now.getMinutes(), 0, 0]))
+        }
     }
 }
 
