@@ -4,33 +4,47 @@ _xpMax_ = null
 niveis_dific = ['Muito Fácil', 'Fácil', 'Médio', 'Difícil', 'Muito Difícil']
 list_type = ["Única", "Diária", "Semanal", "Mensal"]
 
+
+let convert_data = (clock) => {
+    return new Date(clock).toLocaleString()
+}
+
+function setHours(clock, array) {
+    let hora = array[0]
+    let min = array[1]
+    let seg = array[2]
+    let miliseg = array[3]
+    return new Date(clock).setHours(hora, min, seg, miliseg)
+}
+
+let change_data = (clock, days) => {
+    clock = new Date(clock);
+    clock.setDate(clock.getDate() + days);
+    return clock.getTime()
+}
+
+function diffDias(data1, data2) {
+    const d1 = setHours(data1, [0, 0, 0, 0]);
+    const d2 = setHours(data2, [0, 0, 0, 0]);
+
+    const diff = Math.abs(d2 - d1);
+
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+function diffHoras(data1, data2) {
+    const diff = Math.abs(new Date(data2) - new Date(data1));
+
+    let h = Math.floor(diff / (1000 * 60 * 60));
+    let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
 function mainLoop() {
-    let convert_data = (clock) => {
-        return new Date(clock).toLocaleString()
-    }
-    let change_data = (clock, days) => {
-        clock = new Date(clock);
-        clock.setDate(clock.getDate() + days);
-        return clock.getTime()
-    }
-    function setHours(clock, array) {
-        let hora = array[0]
-        let min = array[1]
-        let seg = array[2]
-        let miliseg = array[3]
-        return new Date(clock).setHours(hora, min, seg, miliseg)
-    }
-    function diffDias(data1, data2) {
-        const d1 = setHours(data1, [0, 0, 0, 0]);
-        const d2 = setHours(data2, [0, 0, 0, 0]);
-
-        const diff = Math.abs(d2 - d1);
-
-        return Math.floor(diff / (1000 * 60 * 60 * 24));
-    }
-
     let clock_hoje = new Date().setHours(0, 0, 0, 0);
     Object.entries(window.missoes).forEach(([id, missao]) => {
+        let now = new Date()
         if (missao.tipo != list_type[0]) { // Missoes que tem repeticoes
             let clock_finish_mission = null
             if (missao.last_finish != null) {
@@ -90,6 +104,8 @@ function mainLoop() {
                     }
                 }
             }
+            // let label_timer = document.getElementById("timer_" + id)
+            // label_timer.innerText = diffHoras(change_data(clock_hoje, 1), setHours(now.getTime(), [now.getHours(), now.getMinutes(), 0, 0]))
         }
     });
 }
@@ -111,18 +127,21 @@ function gainXP(amount) {
 function gainAtrib(atributos) {
     for (let i in atributos) {
         let atr = atributos[i]
-        window.datas.atributos[atr]++
+        if (Object.keys(window.datas.atributos).includes(atr)) {
+            window.datas.atributos[atr]++
+        }
     }
     drawRadar(window.datas.atributos)
 }
 function loseAtrib(atributos) {
     for (let i in atributos) {
         let atr = atributos[i]
-        window.datas.atributos[atr]--
+        if (Object.keys(window.datas.atributos).includes(atr)) {
+            window.datas.atributos[atr]--
+        }
     }
     drawRadar(window.datas.atributos)
 }
-
 
 function updateMissions() {
     const mission_list = document.getElementsByClassName("mission-list")[0]
@@ -148,15 +167,23 @@ function updateMissions() {
         html_text += `<hr class="mini-divider"></hr>`
         html_text += `<div>Tipo: ${mission.tipo}</div>`
         let dias_da_missao = []
-        if (mission.tipo == "Semanal") {
+        let tempo_restante = ``
+        if (mission.tipo == "Diária") {
+            tempo_restante += `<hr class="mini-divider"></hr></div>`
+            tempo_restante += `<div>Tempo Restante: <label  id="timer_${idMission}">__:__</label></div>`
+        } else if (mission.tipo == "Semanal") {
             let dias_da_semana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
             for (let idx = 0; idx < mission.repeat.length; idx++) {
                 dias_da_missao.push(dias_da_semana[mission.repeat[idx]])
             }
             dias_da_missao = dias_da_missao.toString().replaceAll(",", ", ")
+            tempo_restante += `<hr class="mini-divider"></hr></div>`
+            tempo_restante += `<div>Tempo Restante: <label  id="timer_${idMission}">__:__</label></div>`
             html_text += `<div>Dias da Semana: ${dias_da_missao}</div>`
         } else if (mission.tipo == "Mensal") {
             dias_da_missao = mission.repeat.toString().replaceAll(",", ", ")
+            tempo_restante += `<hr class="mini-divider"></hr></div>`
+            tempo_restante += `<div>Tempo Restante: <label  id="timer_${idMission}">__:__</label></div>`
             html_text += `<div>Dias: ${dias_da_missao}</div>`
         }
         html_text += `<hr class="mini-divider"></hr>`
@@ -179,6 +206,7 @@ function updateMissions() {
             }
         }
         html_text += `<div>Atributos: ${mission.atributos.toString().replaceAll(",", ", ")}</div>`
+        html_text += tempo_restante
         html_text += `<hr class="mini-divider"></hr></div>`
         html_text += `<div class="mission-div-button">
                         ${button_concluido}

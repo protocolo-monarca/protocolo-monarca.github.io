@@ -109,7 +109,7 @@ window.loadInterface = () => {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("player_name").innerText = window.datas.name
     document.getElementById("system_interface").style.display = "block";
-    // console.log("Logado:", user.displayName);
+
     updateStatus()
     updateMissions()
     drawRadar(window.datas.atributos);
@@ -119,9 +119,8 @@ window.loadInterface = () => {
         console.log(error)
     }
 
-
     close_loader_screen()
-    setInterval(mainLoop, 30000);
+    setInterval(mainLoop, 20000);
     window.mainLoop()
 
 }
@@ -257,11 +256,27 @@ window.editAtrib = async () => {
         return
     }
 
-    const ref = doc(db, "Users", window.uid);
-
     window.datas.atributos = atributos
+    const ref = doc(db, "Users", window.uid);
     await updateDoc(ref, window.datas);
+
+    let key_atributos = Object.keys(atributos)
+    let key_missions = Object.keys(window.missoes)
+    for (let i = 0; i < key_missions.length; i++) {
+        let mission = window.missoes[key_missions[i]]
+        // filtra corretamente
+        mission.atributos = mission.atributos.filter(attr =>
+            key_atributos.includes(attr)
+        )
+
+        // salva cada missão individualmente
+        const missionRef = doc(db, "Users", window.uid, "missoes", key_missions[i])
+        await updateDoc(missionRef, {
+            atributos: mission.atributos
+        })
+    }
     close_system_window("Editar Atributos")
+    updateMissions()
 
     drawRadar(window.datas.atributos);
 }
@@ -376,7 +391,7 @@ window.finishMission = async (_id_, completed = true || false) => {
         }
 
     } else {
-        loseAtrib(["Disciplina"])
+        // loseAtrib(["Disciplina"])
         if (window.missoes[_id_].penalidade != "Sem penalidade") {
             await receberPenalidade(_id_, window.missoes[_id_].penalidade)
         }
@@ -600,12 +615,12 @@ window.receberPenalidade = async function (idMission, idPenal, data_penalidade =
 window.recebPenalidadeAtrasadas = async (_id_, data_penalidade) => {
     const missionRef = doc(db, "Users", window.uid, "missoes", _id_);
     const datas = {
-        last_finish: Date.now()
+        last_finish: data_penalidade
     };
     await updateDoc(missionRef, datas);
     window.missoes[_id_].last_finish = datas.last_finish
 
-    loseAtrib(["Disciplina"])
+    // loseAtrib(["Disciplina"])
     if (window.missoes[_id_].penalidade != "Sem penalidade") {
         await receberPenalidade(_id_, window.missoes[_id_].penalidade, data_penalidade)
     }
