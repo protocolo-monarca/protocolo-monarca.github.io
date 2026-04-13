@@ -26,7 +26,7 @@ let open_system_window = (type, _id_ = null) => {
             button_delete = `<button onclick="deleteMission('${_id_}')">Excluir</button>`
         }
 
-        let atrib_keys = Object.keys(window.datas.atributos)
+        let atrib_keys = window.user.getAtributesKeys()
         let atributos_label = ``
         for (let i = 0; i < atrib_keys.length; i++) {
             atrib_key = atrib_keys[i]
@@ -116,7 +116,7 @@ let open_system_window = (type, _id_ = null) => {
             <hr class="mini-divider">
             <div>Missão: ${_recomp_.mission_title}</div>
             <hr class="mini-divider">
-            <div>Duração: ${String(_recomp_.duration[0]).padStart(2, '0')}:${String(_recomp_.duration[1]).padStart(2, '0')} </div>
+            <div class="duracao">Duração: ${String(_recomp_.duration[0]).padStart(2, '0')}:${String(_recomp_.duration[1]).padStart(2, '0')} </div>
             ${tempo_restante}
             <button onclick="reinvindicarRecomp('${id}', this)" class="${class_btn}">Reinvindicar</button><button  onclick="deletarRecomp('${id}', this.parentNode)">Excluir</button></li>`
         }
@@ -168,7 +168,7 @@ let open_system_window = (type, _id_ = null) => {
             <hr class="mini-divider">
             <div>Missão: ${_penal_.mission_title}</div>
             <hr class="mini-divider">
-            <div>Duração: ${String(_penal_.duration[0]).padStart(2, '0')}:${String(_penal_.duration[1]).padStart(2, '0')} </div>
+            <div class="duracao">Duração: ${String(_penal_.duration[0]).padStart(2, '0')}:${String(_penal_.duration[1]).padStart(2, '0')} </div>
             ${tempo_restante}
             <button onclick="cumprirPenalidade('${id}', this)" class="${class_btn}">Cumprir</button><button  onclick="deletarPenal('${id}', this.parentNode)">Excluir</button></li>`
         }
@@ -269,7 +269,7 @@ let open_system_window = (type, _id_ = null) => {
         content_window.style.width = "40rem"
     } else if (type == "Editar Atributos") {
         let atributos = ``
-        let atrib_list = Object.keys(window.datas.atributos)
+        let atrib_list = window.user.getAtributesKeys()
         for (let i = 0; i < atrib_list.length; i++) {
             atributos += `<div>
                             <button class="atributo_name" onclick="remove_atrib(this)">${atrib_list[i]}<i class="_icon_" data-lucide="x"></i></button>
@@ -339,10 +339,10 @@ let open_system_window = (type, _id_ = null) => {
         const atributos_inputs = document.querySelectorAll("#select_atributos input");
         for (let atr_input in window.missoes[_id_].atributos) {
             const atributo = window.missoes[_id_].atributos[atr_input]
-            atributos_inputs[Object.keys(window.datas.atributos).indexOf(atributo)].checked = true
+            atributos_inputs[window.user.getAtributesKeys().indexOf(atributo)].checked = true
         }
     } else if (type == "Editar Status") {
-        document.getElementById("input_edit_name").value = window.datas.name
+        document.getElementById("input_edit_name").value = window.user.name
     }
     lucide.createIcons()
 }
@@ -483,7 +483,7 @@ function getRepeticao() {
     return valores;
 }
 
-function getAtributos() {
+function getAtributosCheckbox() {
     // pega todos os checkboxes marcados dentro do container
     const selecionados = document.querySelectorAll("#select_atributos input:checked");
 

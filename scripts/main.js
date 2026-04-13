@@ -1,9 +1,7 @@
-window.datas = null
 window.system_windows = {}
 _xpMax_ = null
 niveis_dific = ['Muito Fácil', 'Fácil', 'Médio', 'Difícil', 'Muito Difícil']
 list_type = ["Única", "Diária", "Semanal", "Mensal"]
-
 
 let convert_data = (clock) => {
     return new Date(clock).toLocaleString()
@@ -107,38 +105,7 @@ function mainLoop() {
     });
 }
 
-function gainXP(amount) {
-    window.datas.xp += amount;
-
-    if (window.datas.xp >= _xpMax_) {
-        window.datas.xp -= _xpMax_;
-        window.datas.level++;
-        _xpMax_ = Math.floor(window.datas.level * 100);
-        alert("Level Up!");
-    }
-
-    updateStatus();
-}
-
 // Perfil
-function gainAtrib(atributos) {
-    for (let i in atributos) {
-        let atr = atributos[i]
-        if (Object.keys(window.datas.atributos).includes(atr)) {
-            window.datas.atributos[atr]++
-        }
-    }
-    drawRadar(window.datas.atributos)
-}
-function loseAtrib(atributos) {
-    for (let i in atributos) {
-        let atr = atributos[i]
-        if (Object.keys(window.datas.atributos).includes(atr)) {
-            window.datas.atributos[atr]--
-        }
-    }
-    drawRadar(window.datas.atributos)
-}
 
 function updateMissions() {
     const mission_list = document.getElementsByClassName("mission-list")[0]
@@ -229,13 +196,13 @@ function updateMissions() {
 }
 
 function updateStatus() {
-    _xpMax_ = window.datas.level * 100
-    document.getElementById("player_name").innerText = window.datas.name;
-    document.getElementById("xp").innerText = window.datas.xp;
-    document.getElementById("level").innerText = window.datas.level;
+    _xpMax_ = window.user.level * 100
+    document.getElementById("player_name").innerText = window.user.name;
+    document.getElementById("xp").innerText = window.user.xp;
+    document.getElementById("level").innerText = window.user.level;
     document.getElementById("xpMax").innerText = _xpMax_;
 
-    let percent = (window.datas.xp / _xpMax_) * 100;
+    let percent = (window.user.xp / _xpMax_) * 100;
     document.getElementById("xpBar").style.width = percent + "%";
 }
 

@@ -19,13 +19,6 @@ const firebaseConfig = {
     measurementId: "G-ZD59M6K6CZ"
 };
 
-const defaultUserData = {
-    name: "",
-    level: 1,
-    xp: 0,
-    email: "",
-};
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
@@ -43,28 +36,22 @@ window.loginGoogle = async function () {
     }
 };
 
-let getDataDB = async (_collection_, _object_) => {
+let getDataDB = async (_collection_, Classe = null) => {
     const ref = collection(db, "Users", window.uid, _collection_);
     const snapshot = await getDocs(ref);
 
-    let lista = _object_;
-    if (Array.isArray(lista)) {
-        snapshot.forEach(doc => {
-            lista.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
-    } else if (lista !== null && typeof lista === "object" && !Array.isArray(lista)) {
-        snapshot.forEach(doc => {
-            lista[doc.id] = {
-                ...doc.data()
-            };
-        });
-    }
+    let lista = {};
+
+    snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+
+        lista[docSnap.id] = Classe
+            ? new Classe(data)
+            : data;
+    });
 
     return lista;
-}
+};
 
 // DETECTAR LOGIN
 onAuthStateChanged(auth, async (user) => {
@@ -88,13 +75,13 @@ onAuthStateChanged(auth, async (user) => {
             document.getElementById("loginScreen").style.display = "none";
             close_loader_screen()
         } else {
-            window.datas = userSnap.data();
+            window.user = new User(userSnap.data());
             // console.log("Usuário já existe");
-            window.reg_recomp = await getDataDB("reg_recomp", {})
-            window.reg_penal = await getDataDB("reg_penal", {})
-            window.missoes = await getDataDB("missoes", {});
-            window.recompensas = await getDataDB("recompensas", {});
-            window.penalidades = await getDataDB("penalidades", {});
+            window.reg_recomp = await getDataDB("reg_recomp", reg_recomp)
+            window.reg_penal = await getDataDB("reg_penal", reg_penal)
+            window.missoes = await getDataDB("missoes", Mission)
+            window.recompensas = await getDataDB("recompensas", Recompensa)
+            window.penalidades = await getDataDB("penalidades", Penalidade)
 
             window.loadInterface()
         }
@@ -107,12 +94,12 @@ onAuthStateChanged(auth, async (user) => {
 window.loadInterface = () => {
     const user = window.currentUser
     document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("player_name").innerText = window.datas.name
+    document.getElementById("player_name").innerText = window.user.name
     document.getElementById("system_interface").style.display = "block";
 
     updateStatus()
     updateMissions()
-    drawRadar(window.datas.atributos);
+    drawRadar(window.user.atributos);
     try {
         document.body.removeChild(document.getElementById("signin"))
     } catch (error) {
@@ -152,12 +139,11 @@ window.createPlayer = async () => {
         return
     }
 
-    await setDoc(userRef, {
-        ...defaultUserData,
-        name: player_name,
-        email: user.email,
-        atributos: atributos
-    });
+    window.user["name"] = player_name
+    window.user["email"] = user.email
+    window.user["atributos"] = atributos
+
+    await setDoc(userRef, window.user.toJSON());
 
     document.getElementById("signin").style.display = "none"
     open_loader_screen()
@@ -203,13 +189,6 @@ window.createPlayer = async () => {
     // const IDmissao_doc_ref = await addDoc(ref, newMission).id;
 
     // console.log("Usuário criado!");
-
-    window.datas = {
-        ...defaultUserData,
-        name: user.displayName,
-        email: user.email,
-        atributos: atributos
-    };
     window.reg_recomp = {}
     window.reg_penal = {}
     window.reg_recomp[recomp_doc_ref.id] = newRecomp
@@ -231,8 +210,8 @@ window.editStatus = async () => {
     }
 
     const ref = doc(db, "Users", window.uid);
-    window.datas.name = name
-    await updateDoc(ref, window.datas);
+    window.user["name"] = name
+    await updateDoc(ref, window.user.toJSON());
     close_system_window("Editar Status")
 
     updateStatus();
@@ -245,8 +224,8 @@ window.editAtrib = async () => {
         let atributo = create_atributos[i].innerText
         atributos[atributo] = 0
 
-        if (Object.keys(window.datas.atributos).includes(atributo)) {
-            atributos[atributo] = window.datas.atributos[atributo]
+        if (window.user.getAtributesKeys().includes(atributo)) {
+            atributos[atributo] = window.user.getAtribute(atributo)
         }
     }
 
@@ -256,9 +235,9 @@ window.editAtrib = async () => {
         return
     }
 
-    window.datas.atributos = atributos
+    window.user.atributos = atributos
     const ref = doc(db, "Users", window.uid);
-    await updateDoc(ref, window.datas);
+    await updateDoc(ref, window.user.toJSON());
 
     let key_atributos = Object.keys(atributos)
     let key_missions = Object.keys(window.missoes)
@@ -278,7 +257,7 @@ window.editAtrib = async () => {
     close_system_window("Editar Atributos")
     updateMissions()
 
-    drawRadar(window.datas.atributos);
+    drawRadar(window.user.atributos);
 }
 
 // LOGOUT (opcional)
@@ -300,7 +279,7 @@ window.createMission = async function (_id_ = null) {
     const recompensa = recompensa_elem.value;
     const penalidade_elem = document.getElementById("penalidade_select");
     const penalidade = penalidade_elem.value;
-    const atributos = getAtributos()
+    const atributos = getAtributosCheckbox()
 
     let error = false
 
@@ -339,6 +318,7 @@ window.createMission = async function (_id_ = null) {
             completa: [],
             last_finish: null
         };
+        console.log(newMission)
         const missao_doc_ref = await addDoc(ref, newMission);
 
         window.missoes[missao_doc_ref.id] = newMission
@@ -384,8 +364,8 @@ window.finishMission = async (_id_, completed = true || false) => {
     updateMissions()
 
     if (completed) {
-        gainXP((niveis_dific.indexOf(window.missoes[_id_].dificuldade) + 1) * 50)
-        window.gainAtrib(window.missoes[_id_].atributos)
+        window.user.gainXP((niveis_dific.indexOf(window.missoes[_id_].dificuldade) + 1) * 50)
+        window.user.gainAtrib(window.missoes[_id_].atributos)
         if (window.missoes[_id_].recompensa != "Sem recompensa") {
             await receberRecompensa(_id_, window.missoes[_id_].recompensa)
         }
@@ -396,8 +376,10 @@ window.finishMission = async (_id_, completed = true || false) => {
             await receberPenalidade(_id_, window.missoes[_id_].penalidade)
         }
     }
+    updateStatus();
+    drawRadar(window.user.getAtributesKeys())
     const userRef = doc(db, "Users", window.uid);
-    await updateDoc(userRef, window.datas);
+    await updateDoc(userRef, window.user.toJSON());
 }
 
 window.deleteMission = async function (_id_) {
@@ -528,6 +510,13 @@ window.reinvindicarRecomp = async (idRecomp, elem) => {
     await updateDoc(ref, datas);
     window.recompensas[idRecomp].reinvindicado = reinvind_data
     elem.parentNode.className = "claimed"
+
+    let [horas_rest, minutos_rest] = getTempoRestante(window.recompensas[idRecomp].reinvindicado, window.recompensas[idRecomp].duration)
+    const duracaoDiv = elem.parentNode.querySelector(".duracao");
+    duracaoDiv.insertAdjacentHTML("afterend", `
+        <hr class="mini-divider">
+        <div>Tempo Restante: ${String(horas_rest).padStart(2, '0')}:${String(minutos_rest).padStart(2, '0')} </div>
+    `);
     elem.className = "disabled"
 }
 
@@ -656,7 +645,7 @@ window.recebPenalidadeAtrasadas = async (_id_, data_penalidade) => {
         await receberPenalidade(_id_, window.missoes[_id_].penalidade, data_penalidade)
     }
     const userRef = doc(db, "Users", window.uid);
-    await updateDoc(userRef, window.datas);
+    await updateDoc(userRef, window.user.toJSON());
 }
 
 window.cumprirPenalidade = async (idPenal, elem) => {
@@ -668,6 +657,14 @@ window.cumprirPenalidade = async (idPenal, elem) => {
     await updateDoc(ref, datas);
     window.penalidades[idPenal].cumprido = cumprido_data
     elem.parentNode.className = "claimed"
+
+    let [horas_rest, minutos_rest] = getTempoRestante(window.penalidades[idPenal].cumprido, window.penalidades[idPenal].duration)
+    const duracaoDiv = elem.parentNode.querySelector(".duracao");
+    duracaoDiv.insertAdjacentHTML("afterend", `
+        <hr class="mini-divider">
+        <div>Tempo Restante: ${String(horas_rest).padStart(2, '0')}:${String(minutos_rest).padStart(2, '0')} </div>
+    `);
+
     elem.className = "disabled"
 }
 
