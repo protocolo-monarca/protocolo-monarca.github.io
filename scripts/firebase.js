@@ -430,6 +430,9 @@ window.createRecompensa = async function (_id_ = null) {
     const title_elem = document.getElementById("create-recomp-title")
     const title = title_elem.value;
     const dificuldade = document.getElementById("create-recomp-dificuldade").value;
+    const dur_horas = parseInt(document.getElementById("dur_recomp_horas").value) || 0;
+    const dur_minutos_elem = document.getElementById("dur_recomp_min")
+    const dur_minutos = parseInt(dur_minutos_elem.value) || 0;
     const desc = document.getElementById("create-recomp-desc").value;
 
     if (!title) {
@@ -440,6 +443,13 @@ window.createRecompensa = async function (_id_ = null) {
         alert("Esse Título para a recompensa não é permitido")
         return;
     }
+    if (dur_minutos >= 60) {
+        dur_minutos_elem.style.borderColor = "red"
+        alert("Duração da recompensa não pode ser maior ou igual a 60")
+        return;
+    }
+
+    const dur_Ms = (dur_horas * 60 * 60 * 1000) + (dur_minutos * 60 * 1000);
 
     if (_id_ == null) {
         const ref = collection(db, "Users", window.uid, "reg_recomp");
@@ -447,7 +457,8 @@ window.createRecompensa = async function (_id_ = null) {
             title: title,
             descricao: desc,
             dificuldade: dificuldade,
-            admin: false
+            admin: false,
+            duration: dur_Ms
         };
         const recomp_doc_ref = await addDoc(ref, newRecomp);
         window.reg_recomp[recomp_doc_ref.id] = newRecomp
@@ -458,7 +469,8 @@ window.createRecompensa = async function (_id_ = null) {
             title: title,
             descricao: desc,
             dificuldade: dificuldade,
-            admin: false
+            admin: false,
+            duration: dur_Ms
         };
         await updateDoc(ref, datas);
         window.reg_recomp[_id_] = datas
@@ -489,12 +501,15 @@ window.receberRecompensa = async function (idMission, idRecomp) {
     const title = window.reg_recomp[idRecomp].title
     const descricao = window.reg_recomp[idRecomp].descricao
     const dificuldade = window.reg_recomp[idRecomp].dificuldade
+    let dur_timestamp = window.reg_recomp[idRecomp].duration || 0
+    dur_timestamp = timestampParaHoraMin(dur_timestamp)
     const title_mission = window.missoes[idMission].title
 
     const recomp = {
         title: title,
         descricao: descricao,
         dificuldade: dificuldade,
+        duration: dur_timestamp,
         data: Date.now(),
         mission_title: title_mission,
         mission_id: idMission,
@@ -506,11 +521,12 @@ window.receberRecompensa = async function (idMission, idRecomp) {
 
 window.reinvindicarRecomp = async (idRecomp, elem) => {
     const ref = doc(db, "Users", window.uid, "recompensas", idRecomp);
+    const reinvind_data = Date.now()
     const datas = {
-        reinvindicado: true
+        reinvindicado: reinvind_data
     };
     await updateDoc(ref, datas);
-    window.recompensas[idRecomp].reinvindicado = true
+    window.recompensas[idRecomp].reinvindicado = reinvind_data
     elem.parentNode.className = "claimed"
     elem.className = "disabled"
 }
@@ -535,6 +551,9 @@ window.createPenalidade = async function (_id_ = null) {
     const title_elem = document.getElementById("create-penal-title")
     const title = title_elem.value;
     const dificuldade = document.getElementById("create-penal-dificuldade").value;
+    const dur_horas = parseInt(document.getElementById("dur_penal_horas").value) || 0;
+    const dur_minutos_elem = document.getElementById("dur_penal_min")
+    const dur_minutos = parseInt(dur_minutos_elem.value) || 0;
     const desc = document.getElementById("create-penal-desc").value;
 
     if (!title) {
@@ -545,6 +564,13 @@ window.createPenalidade = async function (_id_ = null) {
         alert("Esse Título para a penalidade não é permitido")
         return;
     }
+    if (dur_minutos >= 60) {
+        dur_minutos_elem.style.borderColor = "red"
+        alert("Duração da penalidade não pode ser maior ou igual a 60")
+        return;
+    }
+
+    const dur_Ms = (dur_horas * 60 * 60 * 1000) + (dur_minutos * 60 * 1000);
 
     if (_id_ == null) {
         const ref = collection(db, "Users", window.uid, "reg_penal");
@@ -552,7 +578,8 @@ window.createPenalidade = async function (_id_ = null) {
             title: title,
             descricao: desc,
             dificuldade: dificuldade,
-            admin: false
+            admin: false,
+            duration: dur_Ms
         };
         let penal_doc_ref = await addDoc(ref, newPenal);
         window.reg_penal[penal_doc_ref.id] = newPenal
@@ -563,7 +590,8 @@ window.createPenalidade = async function (_id_ = null) {
             title: title,
             descricao: desc,
             dificuldade: dificuldade,
-            admin: false
+            admin: false,
+            duration: dur_Ms
         };
         await updateDoc(ref, datas);
         window.reg_penal[_id_] = datas
@@ -594,6 +622,8 @@ window.receberPenalidade = async function (idMission, idPenal, data_penalidade =
     const title = window.reg_penal[idPenal].title
     const descricao = window.reg_penal[idPenal].descricao
     const dificuldade = window.reg_penal[idPenal].dificuldade
+    let dur_timestamp = window.reg_penal[idPenal].duration || 0
+    dur_timestamp = timestampParaHoraMin(dur_timestamp)
     const title_mission = window.missoes[idMission].title
     if (data_penalidade == null) {
         data_penalidade = Date.now()
@@ -603,6 +633,7 @@ window.receberPenalidade = async function (idMission, idPenal, data_penalidade =
         title: title,
         descricao: descricao,
         dificuldade: dificuldade,
+        duration: dur_timestamp,
         data: data_penalidade,
         mission_title: title_mission,
         mission_id: idMission,
@@ -630,11 +661,12 @@ window.recebPenalidadeAtrasadas = async (_id_, data_penalidade) => {
 
 window.cumprirPenalidade = async (idPenal, elem) => {
     const ref = doc(db, "Users", window.uid, "penalidades", idPenal);
+    const cumprido_data = Date.now()
     const datas = {
-        cumprido: true
+        cumprido: cumprido_data
     };
     await updateDoc(ref, datas);
-    window.penalidades[idPenal].cumprido = true
+    window.penalidades[idPenal].cumprido = cumprido_data
     elem.parentNode.className = "claimed"
     elem.className = "disabled"
 }

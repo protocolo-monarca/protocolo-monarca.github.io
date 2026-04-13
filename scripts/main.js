@@ -165,7 +165,7 @@ function updateMissions() {
         html_text += `<div>Tipo: ${mission.tipo}</div>`
         let dias_da_missao = []
         let tempo_restante = ``
-        if (mission.tipo == "Diária") {
+        if (mission.tipo == "Diária" && mission.completa.length == 0) {
             tempo_restante += `<hr class="mini-divider"></hr></div>`
             tempo_restante += `<div>Tempo Restante: <label  id="timer_${idMission}">__:__</label></div>`
         } else if (mission.tipo == "Semanal") {
@@ -174,14 +174,18 @@ function updateMissions() {
                 dias_da_missao.push(dias_da_semana[mission.repeat[idx]])
             }
             dias_da_missao = dias_da_missao.toString().replaceAll(",", ", ")
-            tempo_restante += `<hr class="mini-divider"></hr></div>`
-            tempo_restante += `<div>Tempo Restante: <label  id="timer_${idMission}">__:__</label></div>`
             html_text += `<div>Dias da Semana: ${dias_da_missao}</div>`
+            if (mission.completa.length == 0) {
+                tempo_restante += `<hr class="mini-divider"></hr></div>`
+                tempo_restante += `<div>Tempo Restante: <label  id="timer_${idMission}">__:__</label></div>`
+            }
         } else if (mission.tipo == "Mensal") {
             dias_da_missao = mission.repeat.toString().replaceAll(",", ", ")
-            tempo_restante += `<hr class="mini-divider"></hr></div>`
-            tempo_restante += `<div>Tempo Restante: <label  id="timer_${idMission}">__:__</label></div>`
             html_text += `<div>Dias: ${dias_da_missao}</div>`
+            if (mission.completa.length == 0) {
+                tempo_restante += `<hr class="mini-divider"></hr></div>`
+                tempo_restante += `<div>Tempo Restante: <label  id="timer_${idMission}">__:__</label></div>`
+            }
         }
         html_text += `<hr class="mini-divider"></hr>`
         html_text += `<div>Descrição: ${mission.descricao}</div>`

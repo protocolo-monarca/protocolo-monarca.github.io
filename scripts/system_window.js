@@ -98,9 +98,15 @@ let open_system_window = (type, _id_ = null) => {
             let datePtBr = new Date(_recomp_.data).toLocaleString('pt-BR')
             let class_btn = ""
             let class_li = ""
+            let tempo_restante = ``
             if (_recomp_.reinvindicado) {
                 class_li = "claimed"
                 class_btn = "disabled"
+                let [horas_rest, minutos_rest] = getTempoRestante(_recomp_.reinvindicado, _recomp_.duration)
+                tempo_restante = `
+                    <hr class="mini-divider">
+                    <div>Tempo Restante: ${String(horas_rest).padStart(2, '0')}:${String(minutos_rest).padStart(2, '0')} </div>
+                `
             }
             html_text += `<li id="${id}" class="${class_li}">
             <strong>Recompensa: ${_recomp_.title}</strong>
@@ -109,6 +115,9 @@ let open_system_window = (type, _id_ = null) => {
             <div>Data: ${datePtBr}</div>
             <hr class="mini-divider">
             <div>Missão: ${_recomp_.mission_title}</div>
+            <hr class="mini-divider">
+            <div>Duração: ${String(_recomp_.duration[0]).padStart(2, '0')}:${String(_recomp_.duration[1]).padStart(2, '0')} </div>
+            ${tempo_restante}
             <button onclick="reinvindicarRecomp('${id}', this)" class="${class_btn}">Reinvindicar</button><button  onclick="deletarRecomp('${id}', this.parentNode)">Excluir</button></li>`
         }
         html_text += `</ul>`
@@ -141,9 +150,15 @@ let open_system_window = (type, _id_ = null) => {
             let datePtBr = new Date(_penal_.data).toLocaleString('pt-BR')
             let class_btn = ""
             let class_li = ""
+            let tempo_restante = ``
             if (_penal_.cumprido) {
                 class_li = "claimed"
                 class_btn = "disabled"
+                let [horas_rest, minutos_rest] = getTempoRestante(_penal_.cumprido, _penal_.duration)
+                tempo_restante = `
+                    <hr class="mini-divider">
+                    <div>Tempo Restante: ${String(horas_rest).padStart(2, '0')}:${String(minutos_rest).padStart(2, '0')} </div>
+                `
             }
             html_text += `<li id="${id}" class="${class_li}">
             <strong>Penalidade: ${_penal_.title}</strong>
@@ -152,6 +167,9 @@ let open_system_window = (type, _id_ = null) => {
             <div>Data: ${datePtBr}</div>
             <hr class="mini-divider">
             <div>Missão: ${_penal_.mission_title}</div>
+            <hr class="mini-divider">
+            <div>Duração: ${String(_penal_.duration[0]).padStart(2, '0')}:${String(_penal_.duration[1]).padStart(2, '0')} </div>
+            ${tempo_restante}
             <button onclick="cumprirPenalidade('${id}', this)" class="${class_btn}">Cumprir</button><button  onclick="deletarPenal('${id}', this.parentNode)">Excluir</button></li>`
         }
         html_text += `</ul>`
@@ -198,6 +216,13 @@ let open_system_window = (type, _id_ = null) => {
                     <option value="${niveis_dific[4]}">${niveis_dific[4]}</option>
                 </select>
             </div>
+            <div>
+                <label>Duração:</label>
+                <div class="duracao-inputs">
+                    <input type="number" id="dur_recomp_horas" placeholder="Horas" min="0">
+                    <input type="number" id="dur_recomp_min" placeholder="Min" min="0" max="59">
+                </div>
+            </div>
             <textarea id="create-recomp-desc" placeholder="Descrição da Recompensa"></textarea>
             <button onclick="${function_button}">${type}</button>${button_delete}`;
     } else if (type == "Criar Penalidade" || type == "Editar Penalidade") {
@@ -223,6 +248,13 @@ let open_system_window = (type, _id_ = null) => {
                     <option value="${niveis_dific[3]}">${niveis_dific[3]}</option>
                     <option value="${niveis_dific[4]}">${niveis_dific[4]}</option>
                 </select>
+            </div>
+            <div>
+                <label>Duração:</label>
+                <div class="duracao-inputs">
+                    <input type="number" id="dur_penal_horas" placeholder="Horas" min="0">
+                    <input type="number" id="dur_penal_min" placeholder="Min" min="0" max="59">
+                </div>
             </div>
             <textarea id="create-penal-desc" placeholder="Descrição da Penalidade"></textarea>
             <button onclick="${function_button}">${type}</button>${button_delete}`;
@@ -259,10 +291,18 @@ let open_system_window = (type, _id_ = null) => {
     if (type == "Editar Recompensa") {
         document.getElementById("create-recomp-title").value = window.reg_recomp[_id_].title
         document.getElementById("create-recomp-dificuldade").value = window.reg_recomp[_id_].dificuldade
+        let dur_timestamp = window.reg_recomp[_id_].duration || 0
+        dur_timestamp = timestampParaHoraMin(dur_timestamp)
+        document.getElementById("dur_recomp_horas").value = String(dur_timestamp[0]).padStart(2, '0')
+        document.getElementById("dur_recomp_min").value = String(dur_timestamp[1]).padStart(2, '0')
         document.getElementById("create-recomp-desc").value = window.reg_recomp[_id_].descricao
     } else if (type == "Editar Penalidade") {
         document.getElementById("create-penal-title").value = window.reg_penal[_id_].title
         document.getElementById("create-penal-dificuldade").value = window.reg_penal[_id_].dificuldade
+        let dur_timestamp = window.reg_penal[_id_].duration || 0
+        dur_timestamp = timestampParaHoraMin(dur_timestamp)
+        document.getElementById("dur_penal_horas").value = String(dur_timestamp[0]).padStart(2, '0')
+        document.getElementById("dur_penal_min").value = String(dur_timestamp[1]).padStart(2, '0')
         document.getElementById("create-penal-desc").value = window.reg_penal[_id_].descricao
     } else if (type == "Editar Missão") {
         document.getElementById("create-mission-title").value = window.missoes[_id_].title
@@ -450,4 +490,31 @@ function getAtributos() {
     const valores = Array.from(selecionados).map(el => el.value);
 
     return valores;
+}
+
+function timestampParaHoraMin(ms) {
+    let totalMin = Math.floor(ms / (1000 * 60));
+
+    let horas = Math.floor(totalMin / 60);
+    let minutos = totalMin % 60;
+
+    return [horas, minutos]
+}
+
+function horaMinParaTimestamp(horas, minutos) {
+    horas = Number(horas) || 0;
+    minutos = Number(minutos) || 0;
+
+    return (horas * 60 * 60 * 1000) + (minutos * 60 * 1000);
+}
+
+function getTempoRestante(inicio, duration) {
+    const now = Date.now()
+    const final_tempo_reinv = inicio + horaMinParaTimestamp(duration[0], duration[1])
+    let timestamp_restante = final_tempo_reinv - now;
+    if (timestamp_restante <= 0) { timestamp_restante = 0 };
+    const horas_rest = Math.floor(timestamp_restante / (1000 * 60 * 60));
+    const minutos_rest = Math.floor((timestamp_restante % (1000 * 60 * 60)) / (1000 * 60));
+
+    return [horas_rest, minutos_rest]
 }
