@@ -42,7 +42,7 @@ window.diffHoras = (data1, data2) => {
 function mainLoop() {
     let clock_hoje = new Date().setHours(0, 0, 0, 0);
     Object.entries(window.missoes).forEach(([id, missao]) => {
-        console.log("-=")
+        // console.log("-=")
         if (missao.tipo != list_type[0]) { // Missoes que tem repeticoes
             let clock_finish_mission = null
             if (missao.last_finish != null) {
@@ -50,8 +50,8 @@ function mainLoop() {
             } else {
                 clock_finish_mission = setHours(missao.data, [0, 0, 0, 0]) // pega data de criacao da missao
             }
-            console.log(missao.title)
-            console.log(convert_data(clock_finish_mission))
+            // console.log(missao.title)
+            // console.log(convert_data(clock_finish_mission))
 
             // Resetar Missoes
             if (missao.tipo == list_type[1]) { // Diaria
@@ -82,7 +82,7 @@ function mainLoop() {
             // console.log(missao.tipo)
             // console.log(missao.repeat)
 
-            console.log(no_finish_days)
+            // console.log(no_finish_days)
             for (let i = 1; i <= no_finish_days; i++) {
                 let clock_day_i = change_data(clock_finish_mission, i)
 
