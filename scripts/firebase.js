@@ -378,7 +378,7 @@ window.finishMission = async (_id_, completed = true || false) => {
         }
     }
     updateStatus();
-    drawRadar(window.user.getAtributesKeys())
+    drawRadar(window.user.atributos);
     const userRef = doc(db, "Users", window.uid);
     await updateDoc(userRef, window.user.toJSON());
 }
