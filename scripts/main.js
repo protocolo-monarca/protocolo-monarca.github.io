@@ -105,11 +105,15 @@ function mainLoop() {
     });
 }
 
-// Perfil
-
 function updateMissions() {
-    const mission_list = document.getElementsByClassName("mission-list")[0]
-    mission_list.innerHTML = ""
+    const mission_list_unica = document.getElementById("missions_unicas_card").getElementsByClassName("mission-list")[0]
+    const mission_list_diarias = document.getElementById("missions_diarias_card").getElementsByClassName("mission-list")[0]
+    const mission_list_semanais = document.getElementById("missions_semanais_card").getElementsByClassName("mission-list")[0]
+    const mission_list_mensais = document.getElementById("missions_menais_card").getElementsByClassName("mission-list")[0]
+    mission_list_unica.innerHTML = ""
+    mission_list_diarias.innerHTML = ""
+    mission_list_semanais.innerHTML = ""
+    mission_list_mensais.innerHTML = ""
     for (let idMission in window.missoes) {
         let mission = window.missoes[idMission]
         const li = document.createElement("li")
@@ -183,7 +187,15 @@ function updateMissions() {
                     </div>`
 
         li.innerHTML = html_text
-        mission_list.appendChild(li)
+        if (mission.tipo == list_type[0]) {
+            mission_list_unica.appendChild(li)
+        } else if (mission.tipo == list_type[1]) {
+            mission_list_diarias.appendChild(li)
+        } else if (mission.tipo == list_type[2]) {
+            mission_list_semanais.appendChild(li)
+        } else if (mission.tipo == list_type[3]) {
+            mission_list_mensais.appendChild(li)
+        }
 
         // Tempo Restante
         let clock_hoje = new Date().setHours(0, 0, 0, 0);

@@ -85,7 +85,7 @@
     </div>
     <div id="system_interface">
         <button class="menu-btn button" onclick="toggleSidebar()">☰</button>
-        <h1>Interface do Sistema</h1>
+        <h1>Protocolo Monarca</h1>
         <div class="container">
             <div class="container_vertical">
                 <div id="status_card" class="card">
@@ -117,13 +117,61 @@
                 </div>
             </div>
             <div class="container_vertical">
-                <div id="missions_card" class="card">
-                    <h2>Missões</h2>
+                <div id="missions_unicas_card" class="missions_card card">
+                    <div class="div_title_missions">
+                        <h2>Missões Únicas</h2>
+                        <!-- <button onclick="">
+                            <i class="_icon_" data-lucide="list-filter"></i>
+                        </button> -->
+                    </div>
                     <hr class="divider">
                     <ul class="mission-list">
                     </ul>
-                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">Criar Nova
-                        Missão</button>
+                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">
+                        Criar Nova Missão
+                    </button>
+                </div>
+                <div id="missions_diarias_card" class="missions_card card">
+                    <div class="div_title_missions">
+                        <h2>Missões Diárias</h2>
+                        <!-- <button onclick="">
+                            <i class="_icon_" data-lucide="list-filter"></i>
+                        </button> -->
+                    </div>
+                    <hr class="divider">
+                    <ul class="mission-list">
+                    </ul>
+                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">
+                        Criar Nova Missão
+                    </button>
+                </div>
+                <div id="missions_semanais_card" class="missions_card card">
+                    <div class="div_title_missions">
+                        <h2>Missões Semanais</h2>
+                        <!-- <button onclick="">
+                            <i class="_icon_" data-lucide="list-filter"></i>
+                        </button> -->
+                    </div>
+                    <hr class="divider">
+                    <ul class="mission-list">
+                    </ul>
+                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">
+                        Criar Nova Missão
+                    </button>
+                </div>
+                <div id="missions_menais_card" class="missions_card card">
+                    <div class="div_title_missions">
+                        <h2>Missões Mensais</h2>
+                        <!-- <button onclick="">
+                            <i class="_icon_" data-lucide="list-filter"></i>
+                        </button> -->
+                    </div>
+                    <hr class="divider">
+                    <ul class="mission-list">
+                    </ul>
+                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">
+                        Criar Nova Missão
+                    </button>
                 </div>
             </div>
         </div>

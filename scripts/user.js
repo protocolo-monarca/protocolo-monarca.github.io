@@ -5,20 +5,21 @@ class User {
         this.xp = data.xp || 0;
         this.email = data.email || "";
         this.atributos = data.atributos || {};
+        this.config = data.config || {};
     }
-
-    getAtributesKeys() { return Object.keys(this.atributos) }
-    getAtribute(atribute) { return this.atributos[atribute] }
-
     toJSON() {
         return {
             name: this.name,
             level: this.level,
             xp: this.xp,
             email: this.email,
-            atributos: this.atributos
+            atributos: this.atributos,
+            config: this.config
         };
     }
+
+    getAtributesKeys() { return Object.keys(this.atributos) }
+    getAtribute(atribute) { return this.atributos[atribute] }
 
     gainXP(amount) {
         this.xp += amount;

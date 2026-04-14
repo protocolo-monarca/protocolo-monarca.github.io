@@ -168,7 +168,8 @@ h1 {
 }
 
 #atr_card div button,
-#status_card div button {
+#status_card div button,
+.missions_card .div_title_missions button {
     position: absolute;
     padding: 0px;
     right: 2.5rem;
@@ -189,7 +190,7 @@ h1 {
     aspect-ratio: 1 / 1;
 }
 
-#missions_card {
+.missions_card {
     /* grid-column: span 2; */
     /* grid-row: span 2; */
     min-width: 25rem;

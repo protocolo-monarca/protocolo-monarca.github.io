@@ -1,4 +1,11 @@
+class system_window {
+    constructor(type, content, _id_) {
+
+    }
+}
+
 let open_system_window = (type, _id_ = null) => {
+    
     let _system_window_ = document.createElement("div");
     window.system_windows[type] = _system_window_
     _system_window_.className = "window_system"
