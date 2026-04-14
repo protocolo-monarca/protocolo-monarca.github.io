@@ -53,26 +53,6 @@ function mainLoop() {
             // console.log(missao.title)
             // console.log(convert_data(clock_finish_mission))
 
-            // Resetar Missoes
-            if (missao.tipo == list_type[1]) { // Diaria
-                if (clock_hoje > clock_finish_mission) {
-                    window.resetMissions(id)
-                }
-            } else if (missao.tipo == list_type[2]) { // Semanal
-                if (clock_hoje > clock_finish_mission) {
-                    let dia_semana_hoje = new Date(clock_hoje).getDay()
-                    if (missao.repeat.includes(dia_semana_hoje)) {
-                        window.resetMissions(id)
-                    }
-                }
-            } else if (missao.tipo == list_type[3]) { // Mensal
-                if (clock_hoje > clock_finish_mission) {
-                    let dia_hoje = new Date(clock_hoje).getDate()
-                    if (missao.repeat.includes(dia_hoje)) {
-                        window.resetMissions(id)
-                    }
-                }
-            }
 
             // Missao Falha
             // clock_finish_mission = change_data(clock_finish_mission, -20) // TESTE -> 20 dias atras
@@ -105,6 +85,28 @@ function mainLoop() {
                     }
                 }
             }
+
+            // Resetar Missoes
+            if (missao.tipo == list_type[1]) { // Diaria
+                if (clock_hoje > clock_finish_mission) {
+                    window.resetMissions(id)
+                }
+            } else if (missao.tipo == list_type[2]) { // Semanal
+                if (clock_hoje > clock_finish_mission) {
+                    let dia_semana_hoje = new Date(clock_hoje).getDay()
+                    if (missao.repeat.includes(dia_semana_hoje)) {
+                        window.resetMissions(id)
+                    }
+                }
+            } else if (missao.tipo == list_type[3]) { // Mensal
+                if (clock_hoje > clock_finish_mission) {
+                    let dia_hoje = new Date(clock_hoje).getDate()
+                    if (missao.repeat.includes(dia_hoje)) {
+                        window.resetMissions(id)
+                    }
+                }
+            }
+
         }
     });
 }
