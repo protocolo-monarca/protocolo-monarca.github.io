@@ -1,8 +1,7 @@
 #signin {
-    display: none;
-    margin: auto;
     align-items: center;
     justify-self: center;
+    flex-direction: column;
 }
 
 #creator_name,
@@ -10,8 +9,8 @@
     width: 100%;
 }
 
-#signin .form-system div div div {
-    width: 10em;
+#signin div {
+    width: 100%;
 }
 
 #creator_atributos_div {

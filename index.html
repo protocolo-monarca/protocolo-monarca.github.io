@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Protocolo Monarca</title>
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/window_system.css">
     <link rel="stylesheet" href="styles/login.css">
     <link rel="stylesheet" href="styles/loader.css">
     <link rel="stylesheet" href="styles/signin.css">
@@ -15,6 +16,8 @@
 </head>
 
 <body>
+    <script src="scripts/sound.js"></script>
+    <script src="scripts/speech.js"></script>
     <div id="loader">
         <div class="card">
             <div class="spinner"></div>
@@ -22,53 +25,6 @@
         </div>
     </div>
     <script src="scripts/loader.js"></script>
-    <div id="signin">
-        <div class="card">
-            <h2>Cadastrar Jogador</h2>
-            <hr class="divider">
-
-            <div class="form-system">
-                <div>
-                    <label>Nome</label>
-                    <input type="text" id="creator_name" placeholder="Digite seu nome">
-                </div>
-                <div id="creator_atributos_div">
-                    <div>
-                        <label>Atributos:</label>
-                        <input type="text" id="creator_atributo"><button onclick="add_atrib(this)">Adicionar</button>
-                    </div>
-                    <div id="create_atributos">
-                        <div>
-                            <button class="atributo_name" onclick="remove_atrib(this)">Disciplina<i class="_icon_"
-                                    data-lucide="x"></i></button>
-                        </div>
-                        <div>
-                            <button class="atributo_name" onclick="remove_atrib(this)">Força<i class="_icon_"
-                                    data-lucide="x"></i></button>
-                        </div>
-                        <div>
-                            <button class="atributo_name" onclick="remove_atrib(this)">Inteligência<i class="_icon_"
-                                    data-lucide="x"></i></button>
-                        </div>
-                        <div>
-                            <button class="atributo_name" onclick="remove_atrib(this)">Social<i class="_icon_"
-                                    data-lucide="x"></i></button>
-                        </div>
-                        <div>
-                            <button class="atributo_name" onclick="remove_atrib(this)">Vitalidade<i class="_icon_"
-                                    data-lucide="x"></i></button>
-                        </div>
-                        <div>
-                            <button class="atributo_name" onclick="remove_atrib(this)">Finanças<i class="_icon_"
-                                    data-lucide="x"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <button onclick="createPlayer()">Iniciar</button>
-            </div>
-        </div>
-    </div>
     <script src="scripts/signup.js"></script>
 
     <div class="login-container card" id="loginScreen">

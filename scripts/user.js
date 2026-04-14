@@ -28,7 +28,7 @@ class User {
             this.xp -= _xpMax_;
             this.level++;
             _xpMax_ = Math.floor(this.level * 100);
-            alert("Level Up!");
+            open_system_window("Level Up!")
         }
     }
 

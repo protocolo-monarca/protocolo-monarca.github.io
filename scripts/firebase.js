@@ -67,9 +67,12 @@ onAuthStateChanged(auth, async (user) => {
         window.uid = uid
 
         if (!userSnap.exists()) {
+            if (!(await confirmSystem("PROTOCOLO MONARCA DISPONÍVEL"))) { window.logout(); return };
             // console.log("Primeiro login, criando usuário...");
 
-            document.getElementById("signin").style.display = "flex"
+            open_system_window("Cadastrar Jogador")
+
+            // document.getElementById("signin").style.display = "flex"
             document.getElementById("creator_name").value = user.displayName
 
             document.getElementById("loginScreen").style.display = "none";
@@ -101,7 +104,7 @@ window.loadInterface = () => {
     updateMissions()
     drawRadar(window.user.atributos);
     try {
-        document.body.removeChild(document.getElementById("signin"))
+        close_system_window("Cadastrar Jogador")
     } catch (error) {
         console.log(error)
     }
@@ -136,7 +139,7 @@ window.createPlayer = async () => {
     }
 
     if (Object.keys(atributos).length < 3) {
-        alert("Mínimo 3 Atributos!")
+        open_system_window("Mínimo de Atributos!")
         return
     }
 
@@ -146,7 +149,7 @@ window.createPlayer = async () => {
 
     await setDoc(userRef, window.user.toJSON());
 
-    document.getElementById("signin").style.display = "none"
+    // document.getElementById("signin").style.display = "none"
     open_loader_screen()
 
     // Penalidade Padrão
@@ -230,11 +233,11 @@ window.editAtrib = async () => {
         }
     }
 
-    if (!confirm(`O progresso do(s) atributo(s) deletado(s) serão apagados, deseja continuar?`)) { return };
     if (Object.keys(atributos).length < 3) {
-        alert("Mínimo 3 Atributos!")
+        open_system_window("Mínimo de Atributos!")
         return
     }
+    if (!(await confirmSystem("Confirmar Edição de Atributos"))) { return };
 
     window.user.atributos = atributos
     const ref = doc(db, "Users", window.uid);
@@ -319,7 +322,6 @@ window.createMission = async function (_id_ = null) {
             completa: [],
             last_finish: null
         };
-        console.log(newMission)
         const missao_doc_ref = await addDoc(ref, newMission);
 
         window.missoes[missao_doc_ref.id] = newMission
@@ -353,7 +355,7 @@ window.createMission = async function (_id_ = null) {
 window.finishMission = async (_id_, completed = true || false) => {
     let string_alert_completed = "Concluída"
     if (!completed) { string_alert_completed = "Malsucedida" }
-    if (!confirm(`Deseja finalizar a missão (${string_alert_completed})?`)) { return };
+    if (!(await confirmSystem("Finalizar Missão", string_alert_completed))) { return };
     const missionRef = doc(db, "Users", window.uid, "missoes", _id_);
     const datas = {
         completa: [Date.now(), completed],
@@ -384,7 +386,7 @@ window.finishMission = async (_id_, completed = true || false) => {
 }
 
 window.deleteMission = async function (_id_) {
-    if (!confirm("Tem certeza que deseja deletar?")) return;
+    if (!(await confirmSystem("Deletar"))) return;
     try {
         const ref = doc(db, "Users", window.uid, "missoes", _id_);
 
@@ -392,7 +394,7 @@ window.deleteMission = async function (_id_) {
 
         delete window.missoes[_id_];
     } catch (error) {
-        alert("Erro ao deletar:", error);
+        open_system_window("Erro!", error)
     }
     close_system_window("Editar Missão")
     updateMissions()
@@ -423,12 +425,12 @@ window.createRecompensa = async function (_id_ = null) {
         return;
     } else if (title == "Sem recompensa") {
         title_elem.style.borderColor = "red"
-        alert("Esse Título para a recompensa não é permitido")
+        open_system_window("Título Bloqueado")
         return;
     }
     if (dur_minutos >= 60) {
         dur_minutos_elem.style.borderColor = "red"
-        alert("Duração da recompensa não pode ser maior ou igual a 60")
+        open_system_window("Duração dos minutos!")
         return;
     }
 
@@ -464,7 +466,7 @@ window.createRecompensa = async function (_id_ = null) {
 }
 
 window.deleteRecompensa = async function (_id_) {
-    if (!confirm("Tem certeza que deseja deletar?")) return;
+    if (!(await confirmSystem("Deletar"))) return;
     try {
         const ref = doc(db, "Users", window.uid, "reg_recomp", _id_);
 
@@ -472,7 +474,7 @@ window.deleteRecompensa = async function (_id_) {
 
         delete window.reg_recomp[_id_];
     } catch (error) {
-        alert("Erro ao deletar:", error);
+        open_system_window("Erro!", error)
     }
     close_system_window("Editar Recompensa")
     close_system_window("Recompensas")
@@ -500,6 +502,7 @@ window.receberRecompensa = async function (idMission, idRecomp) {
     };
     const recomp_doc_ref = await addDoc(ref, recomp);
     window.recompensas[recomp_doc_ref.id] = recomp
+    open_system_window("Recompensa Recebida", recomp_doc_ref.id)
 }
 
 window.reinvindicarRecomp = async (idRecomp, elem) => {
@@ -522,7 +525,7 @@ window.reinvindicarRecomp = async (idRecomp, elem) => {
 }
 
 window.deletarRecomp = async (idRecomp, elem) => {
-    if (!confirm("Tem certeza que deseja deletar?")) return;
+    if (!(await confirmSystem("Deletar"))) return;
     try {
         const ref = doc(db, "Users", window.uid, "recompensas", idRecomp);
 
@@ -530,7 +533,7 @@ window.deletarRecomp = async (idRecomp, elem) => {
 
         delete window.recompensas[idRecomp];
     } catch (error) {
-        alert("Erro ao deletar:", error);
+        open_system_window("Erro!", error)
     }
 
     elem.parentNode.removeChild(elem)
@@ -551,12 +554,12 @@ window.createPenalidade = async function (_id_ = null) {
         return;
     } else if (title == "Sem penalidade") {
         title_elem.style.borderColor = "red"
-        alert("Esse Título para a penalidade não é permitido")
+        open_system_window("Título Bloqueado")
         return;
     }
     if (dur_minutos >= 60) {
         dur_minutos_elem.style.borderColor = "red"
-        alert("Duração da penalidade não pode ser maior ou igual a 60")
+        open_system_window("Duração dos minutos!")
         return;
     }
 
@@ -592,7 +595,7 @@ window.createPenalidade = async function (_id_ = null) {
 }
 
 window.deletePenalidade = async function (_id_) {
-    if (!confirm("Tem certeza que deseja deletar?")) return;
+    if (!(await confirmSystem("Deletar"))) return;
     try {
         const ref = doc(db, "Users", window.uid, "reg_penal", _id_);
 
@@ -600,7 +603,7 @@ window.deletePenalidade = async function (_id_) {
 
         delete window.reg_penal[_id_];
     } catch (error) {
-        alert("Erro ao deletar:", error);
+        open_system_window("Erro!", error)
     }
     close_system_window("Editar Penalidade")
     close_system_window("Penalidades")
@@ -631,6 +634,8 @@ window.receberPenalidade = async function (idMission, idPenal, data_penalidade =
     };
     const penal_doc_ref = await addDoc(ref, penal);
     window.penalidades[penal_doc_ref.id] = penal
+
+    open_system_window("Penalidade Recebida", penal_doc_ref.id)
 }
 
 window.recebPenalidadeAtrasadas = async (_id_, data_penalidade) => {
@@ -670,7 +675,7 @@ window.cumprirPenalidade = async (idPenal, elem) => {
 }
 
 window.deletarPenal = async (idPenal, elem) => {
-    if (!confirm("Tem certeza que deseja deletar?")) return;
+    if (!(await confirmSystem("Deletar"))) return;
     try {
         const ref = doc(db, "Users", window.uid, "penalidades", idPenal);
 
@@ -678,7 +683,7 @@ window.deletarPenal = async (idPenal, elem) => {
 
         delete window.penalidades[idPenal];
     } catch (error) {
-        alert("Erro ao deletar:", error);
+        open_system_window("Erro!", error)
     }
 
     elem.parentNode.removeChild(elem)

@@ -1,41 +1,43 @@
-class system_window {
-    constructor(type, content, _id_) {
-
-    }
-}
-
-let open_system_window = (type, _id_ = null) => {
-    let _system_window_ = document.createElement("div");
-    window.system_windows[type] = _system_window_
-    _system_window_.className = "window_system"
-    _system_window_.innerHTML = `
+class SystemWindow {
+    constructor(type, _id_) {
+        play_effect_sound()
+        this.type = type
+        this._id_ = _id_
+        this.system_window = document.createElement("div");
+        this.system_window.className = "window_system"
+        this.system_window.innerHTML = `
         <div class="bg_window" onclick="close_system_window('${type}')" ></div>
         <div class="content_window card">
             <button class="close_button" onclick="close_system_window('${type}')" class="button"> X </button>
             <h2>Title</h2>
             <hr class="divider">
         </div>`
-    document.body.appendChild(_system_window_)
+        document.body.appendChild(this.system_window)
 
-    content_window = _system_window_.children[1]
-    title = content_window.children[1]
-    title.innerText = type
-    const form_system = document.createElement("div");
-    form_system.className = "form-system"
+        this.content_window = this.system_window.children[1]
+        let title = this.content_window.children[1]
+        title.innerText = type
+        this.form_system = document.createElement("div");
+        this.form_system.className = "form-system"
+        this.content_window.appendChild(this.form_system);
+    }
 
-    if (type == "Criar nova Missão" || type == "Editar Missão") {
-        if (type == "Criar nova Missão") {
+
+    new_or_edit_mission() {
+        let function_button;
+        let button_delete;
+        if (this.type == "Criar nova Missão") {
             function_button = "createMission()"
             button_delete = ""
-        } else if (type == "Editar Missão") {
-            function_button = `createMission('${_id_}')`
-            button_delete = `<button onclick="deleteMission('${_id_}')">Excluir</button>`
+        } else if (this.type == "Editar Missão") {
+            function_button = `createMission('${this._id_}')`
+            button_delete = `<button onclick="deleteMission('${this._id_}')">Excluir</button>`
         }
 
         let atrib_keys = window.user.getAtributesKeys()
         let atributos_label = ``
         for (let i = 0; i < atrib_keys.length; i++) {
-            atrib_key = atrib_keys[i]
+            let atrib_key = atrib_keys[i]
             atributos_label += `
             <label class="check">
                 <input type="checkbox" value="${atrib_key}">
@@ -43,7 +45,7 @@ let open_system_window = (type, _id_ = null) => {
             </label>`
         }
 
-        form_system.innerHTML = `
+        this.setContent(`
             <div>
                 <label>Título</label>
                 <input type="text" id="create-mission-title" class="form-title-create" placeholder="Ex: Treinamento de força">
@@ -93,14 +95,15 @@ let open_system_window = (type, _id_ = null) => {
                 ${atributos_label}
             </div>
 
-            <button id="" onclick="${function_button}">${type}</button>${button_delete}`;
-    } else if (type == "Recompensas") {
-        html_text = `
+            <button id="" onclick="${function_button}">${this.type}</button>${button_delete}`)
+    }
+    recompensas() {
+        let html_text = `
             <h3>Disponiveis</h3>
             <ul class="system_disp">`
 
         for (let id in window.recompensas) {
-            _recomp_ = window.recompensas[id]
+            let _recomp_ = window.recompensas[id]
             let datePtBr = new Date(_recomp_.data).toLocaleString('pt-BR')
             let class_btn = ""
             let class_li = ""
@@ -131,9 +134,9 @@ let open_system_window = (type, _id_ = null) => {
         for (let i = 0; i <= 4; i++) {
             html_text += `<hr class="mini-divider">
                 <h3>${niveis_dific[i]}</h3>
-                <ul id="${type}-${i}" class="system_dificuldade">`
+                <ul id="${this.type}-${i}" class="system_dificuldade">`
             for (let id in window.reg_recomp) {
-                _reg_recomp_ = window.reg_recomp[id]
+                let _reg_recomp_ = window.reg_recomp[id]
                 if (_reg_recomp_.dificuldade == niveis_dific[i]) {
                     html_text += `<li id="${id}" onclick="open_system_window('Editar Recompensa' , this.id)"><strong>${_reg_recomp_.title}</strong>
                         <hr class="mini-divider">
@@ -143,16 +146,16 @@ let open_system_window = (type, _id_ = null) => {
             html_text += `</ul>`
         }
 
-        html_text +=
-            `<button onclick="open_system_window('Criar Recompensa')">Criar Recompensa</button>`;
-        form_system.innerHTML = html_text
-    } else if (type == "Penalidades") {
-        html_text = `
+        html_text += `<button onclick="open_system_window('Criar Recompensa')">Criar Recompensa</button>`;
+        this.setContent(html_text)
+    }
+    penalidades() {
+        let html_text = `
             <h3>Disponiveis</h3>
             <ul class="system_disp_penal">`
 
         for (let id in window.penalidades) {
-            _penal_ = window.penalidades[id]
+            let _penal_ = window.penalidades[id]
             let datePtBr = new Date(_penal_.data).toLocaleString('pt-BR')
             let class_btn = ""
             let class_li = ""
@@ -183,9 +186,9 @@ let open_system_window = (type, _id_ = null) => {
         for (let i = 0; i <= 4; i++) {
             html_text += `<hr class="mini-divider">
                 <h3>${niveis_dific[i]}</h3>
-                <ul id="${type}-${i}" class="system_dificuldade">`
+                <ul id="${this.type}-${i}" class="system_dificuldade">`
             for (let id in window.reg_penal) {
-                _reg_penal_ = window.reg_penal[id]
+                let _reg_penal_ = window.reg_penal[id]
                 if (_reg_penal_.dificuldade == niveis_dific[i]) {
                     html_text += `<li id="${id}" onclick="open_system_window('Editar Penalidade', this.id)"><strong>${_reg_penal_.title}</strong>
                         <hr class="mini-divider">
@@ -196,18 +199,20 @@ let open_system_window = (type, _id_ = null) => {
         }
 
         html_text += `<button onclick="open_system_window('Criar Penalidade')">Criar Penalidade</button>`;
-        form_system.innerHTML = html_text
-
-    } else if (type == "Criar Recompensa" || type == "Editar Recompensa") {
-        if (type == "Criar Recompensa") {
+        this.setContent(html_text)
+    }
+    new_or_edit_recomp() {
+        let function_button;
+        let button_delete;
+        if (this.type == "Criar Recompensa") {
             function_button = "createRecompensa()"
             button_delete = ""
-        } else if (type == "Editar Recompensa") {
-            function_button = `createRecompensa('${_id_}')`
-            button_delete = `<button onclick="deleteRecompensa('${_id_}')">Excluir</button>`
+        } else if (this.type == "Editar Recompensa") {
+            function_button = `createRecompensa('${this._id_}')`
+            button_delete = `<button onclick="deleteRecompensa('${this._id_}')">Excluir</button>`
         }
 
-        form_system.innerHTML = `
+        let html_text = `
             <div>
                 <label>Título</label>
                 <input type="text" id="create-recomp-title" class="form-title-create" placeholder="Ex: 2 Horas de Descanso">
@@ -230,17 +235,23 @@ let open_system_window = (type, _id_ = null) => {
                 </div>
             </div>
             <textarea id="create-recomp-desc" placeholder="Descrição da Recompensa"></textarea>
-            <button onclick="${function_button}">${type}</button>${button_delete}`;
-    } else if (type == "Criar Penalidade" || type == "Editar Penalidade") {
-        if (type == "Criar Penalidade") {
+            <button onclick="${function_button}">${this.type}</button>${button_delete}
+            `
+
+        this.setContent(html_text)
+    }
+    new_or_edit_penal() {
+        let function_button;
+        let button_delete;
+        if (this.type == "Criar Penalidade") {
             function_button = "createPenalidade()"
             button_delete = ""
-        } else if (type == "Editar Penalidade") {
-            function_button = `createPenalidade('${_id_}')`
-            button_delete = `<button onclick="deletePenalidade('${_id_}')">Excluir</button>`
+        } else if (this.type == "Editar Penalidade") {
+            function_button = `createPenalidade('${this._id_}')`
+            button_delete = `<button onclick="deletePenalidade('${this._id_}')">Excluir</button>`
         }
 
-        form_system.innerHTML = `
+        let html_text = `
             <div>
                 <label>Título</label>
                 <input type="text" id="create-penal-title" class="form-title-create" placeholder="Ex: 12 Horas Offline (sem scrolling)">
@@ -263,17 +274,21 @@ let open_system_window = (type, _id_ = null) => {
                 </div>
             </div>
             <textarea id="create-penal-desc" placeholder="Descrição da Penalidade"></textarea>
-            <button onclick="${function_button}">${type}</button>${button_delete}`;
-    } else if (type == "Editar Status") {
-        form_system.innerHTML = `
+            <button onclick="${function_button}">${this.type}</button>${button_delete}`;
+        this.setContent(html_text)
+    }
+    edit_status() {
+        let html_text = `
             <div>
                 <label>Nome: </label>
                 <input type="text" id="input_edit_name" class="form-title-create" >
             </div>
             <button onclick="editStatus()">Salvar</button>`;
 
-        content_window.style.width = "40rem"
-    } else if (type == "Editar Atributos") {
+        this.content_window.style.width = "40rem"
+        this.setContent(html_text)
+    }
+    edit_atributos() {
         let atributos = ``
         let atrib_list = window.user.getAtributesKeys()
         for (let i = 0; i < atrib_list.length; i++) {
@@ -282,7 +297,7 @@ let open_system_window = (type, _id_ = null) => {
                         </div>`
         }
 
-        form_system.innerHTML = `
+        html_text = `
                     <div>
                         <label>Atributos:</label>
                         <input type="text" id="input_edit_atributo"><button onclick="add_atrib(this)">Adicionar</button>
@@ -291,9 +306,204 @@ let open_system_window = (type, _id_ = null) => {
                         ${atributos}
                     </div>
             <button onclick="editAtrib()">Salvar</button>`;
-        content_window.style.width = "40rem"
+        this.content_window.style.width = "40rem"
+        this.setContent(html_text)
     }
-    content_window.appendChild(form_system);
+    SignIn() {
+        let html_text = `
+            <div id="signin">
+                <div>
+                    <label>Nome</label>
+                    <input type="text" id="creator_name" placeholder="Digite seu nome">
+                </div>
+                <div id="creator_atributos_div">
+                    <div>
+                        <label>Atributos:</label>
+                        <input type="text" id="creator_atributo"><button onclick="add_atrib(this)">Adicionar</button>
+                    </div>
+                    <div id="create_atributos">
+                        <div>
+                            <button class="atributo_name" onclick="remove_atrib(this)">Disciplina<i class="_icon_"
+                                    data-lucide="x"></i></button>
+                        </div>
+                        <div>
+                            <button class="atributo_name" onclick="remove_atrib(this)">Força<i class="_icon_"
+                                    data-lucide="x"></i></button>
+                        </div>
+                        <div>
+                            <button class="atributo_name" onclick="remove_atrib(this)">Inteligência<i class="_icon_"
+                                    data-lucide="x"></i></button>
+                        </div>
+                        <div>
+                            <button class="atributo_name" onclick="remove_atrib(this)">Social<i class="_icon_"
+                                    data-lucide="x"></i></button>
+                        </div>
+                        <div>
+                            <button class="atributo_name" onclick="remove_atrib(this)">Vitalidade<i class="_icon_"
+                                    data-lucide="x"></i></button>
+                        </div>
+                        <div>
+                            <button class="atributo_name" onclick="remove_atrib(this)">Finanças<i class="_icon_"
+                                    data-lucide="x"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <button style="width:100%;" onclick="createPlayer()">Iniciar</button>
+            </div>`
+        this.content_window.style.width = "40rem"
+        this.setContent(html_text)
+    }
+    notification(content) {
+        talk(this.type)
+        this.content_window.style.width = "40rem"
+        this.setContent(content)
+    }
+
+    setContent(content) {
+        this.form_system.innerHTML = content
+    }
+}
+
+function confirmSystem(type, datas = null) {
+    return new Promise((resolve) => {
+        window.system_windows[type] = new SystemWindow(type);
+        const win = window.system_windows[type];
+
+        let content
+        if (type == "Deletar") {
+            content = `
+                <h1>Tem certeza que deseja deletar?</h1>
+                <label>A ação não pode ser desfeita!</label>
+                <div style="display:flex; gap:10px; justify-content:space-around;">
+                    <button class="btn-confirm"  id="confirm-yes">Sim</button>
+                    <button class="btn-confirm"  id="confirm-no">Não</button>
+                </div>
+            `;
+        } else if (type == "Confirmar Edição de Atributos") {
+            content = `
+                <h1>O progresso do (s) atributo(s) deletado(s) serão apagados, deseja continuar?</h1>
+                <label>A ação não pode ser desfeita!</label>
+                <div style="display:flex; gap:10px; justify-content:space-around;">
+                    <button class="btn-confirm"  id="confirm-yes">Sim</button>
+                    <button class="btn-confirm"  id="confirm-no">Não</button>
+                </div>
+            `;
+        } else if (type == "Finalizar Missão") {
+            content = `
+                <h1>Deseja finalizar a missão?</h1>
+                <label>(${datas})</label>
+                <div style="display:flex; gap:10px; justify-content:space-around;">
+                    <button class="btn-confirm"  id="confirm-yes">Sim</button>
+                    <button class="btn-confirm" id="confirm-no">Não</button>
+                </div>
+            `;
+        } else if (type == "PROTOCOLO MONARCA DISPONÍVEL") {
+            content = `
+                <label>Você tem a oportunidade de se tornar um jogador!</label>
+                <h1>Deseja iniciar o SISTEMA?</h1>
+                <div style="display:flex; gap:1rem; justify-content:space-around;">
+                    <button class="btn-yes btn-confirm" id="confirm-yes">Sim</button>
+                    <button class="btn-no btn-confirm" id="confirm-no">Não</button>
+                </div>
+            `;
+        }
+
+        win.notification(content);
+
+        document.getElementById("confirm-yes").onclick = () => {
+            close_system_window(type);
+            resolve(true);
+        };
+
+        document.getElementById("confirm-no").onclick = () => {
+            close_system_window(type);
+            resolve(false);
+        };
+    });
+}
+
+let open_system_window = (type, _id_ = null) => {
+    window.system_windows[type] = new SystemWindow(type, _id_)
+
+    if (type == "Criar nova Missão" || type == "Editar Missão") {
+        window.system_windows[type].new_or_edit_mission()
+    } else if (type == "Recompensas") {
+        window.system_windows[type].recompensas()
+    } else if (type == "Penalidades") {
+        window.system_windows[type].penalidades()
+    } else if (type == "Criar Recompensa" || type == "Editar Recompensa") {
+        window.system_windows[type].new_or_edit_recomp()
+    } else if (type == "Criar Penalidade" || type == "Editar Penalidade") {
+        window.system_windows[type].new_or_edit_penal()
+    } else if (type == "Editar Status") {
+        window.system_windows[type].edit_status()
+    } else if (type == "Editar Atributos") {
+        window.system_windows[type].edit_atributos()
+    } else if (type == "Level Up!") {
+        let content = `
+        <h1>Parabéns!</h1>
+        <p style="text-align: center;">Você subiu de nível!</p>
+        <button onclick="close_system_window('${type}')">Ok</button>`
+        window.system_windows[type].notification(content)
+    } else if (type == "Penalidade Recebida") {
+        let content = `
+        <h1>Você recebeu uma penalidade!</h1>
+        <label>Título: ${window.penalidades[_id_].title}</label>
+        <label>Data: ${convert_data(window.penalidades[_id_].data)}</label>
+        <label>Descrição: ${window.penalidades[_id_].descricao}</label>
+        <label>Duração: ${String(window.penalidades[_id_].duration[0]).padStart(2, '0')}:${String(window.penalidades[_id_].duration[1]).padStart(2, '0')}</label>
+        <label>Dificuldade: ${window.penalidades[_id_].dificuldade}</label>
+        <label>Missão: ${window.penalidades[_id_].mission_title}</label>
+        <button onclick="close_system_window('${type}')">Ok</button>`
+        window.system_windows[type].notification(content)
+    } else if (type == "Recompensa Recebida") {
+        let content = `
+        <h1>Parabens! Você recebeu uma recomepensa!</h1>
+        <label>Título: ${window.recompensas[_id_].title}</label>
+        <label>Data: ${convert_data(window.recompensas[_id_].data)}</label>
+        <label>Descrição: ${window.recompensas[_id_].descricao}</label>
+        <label>Duração: ${String(window.recompensas[_id_].duration[0]).padStart(2, '0')}:${String(window.recompensas[_id_].duration[1]).padStart(2, '0')}</label>
+        <label>Dificuldade: ${window.recompensas[_id_].dificuldade}</label>
+        <label>Missão: ${window.recompensas[_id_].mission_title}</label>
+        <button onclick="close_system_window('${type}')">Ok</button>`
+        window.system_windows[type].notification(content)
+    } else if (type == "Erro!") {
+        let content = `
+        <h1>Erro ao Deletar</h1>
+        <label>Por Favor informe ao Administrador do erro: </label>
+        <label>${_id_}</label>
+        <button onclick="close_system_window('${type}')">Ok</button>`
+        window.system_windows[type].notification(content)
+    } else if (type == "Mínimo de Atributos!") {
+        let content = `
+        <h1>Mínimo 3 Atributos!</h1>
+        <label>É obrigatório no mínimo 3 Atributos!</label>
+        <button onclick="close_system_window('${type}')">Ok</button>`
+        window.system_windows[type].notification(content)
+    } else if (type == "Título Bloqueado") {
+        let content = `
+        <h1>Esse Título não é permitido</h1>
+        <label>O título está reservado pelo sistema, por favor use outro!</label>
+        <button onclick="close_system_window('${type}')">Ok</button>`
+        window.system_windows[type].notification(content)
+    } else if (type == "Duração dos minutos!") {
+        let content = `
+        <h1>Valor Máximo para duração dos minutos</h1>
+        <label>Duração dos minutos não pode ser maior que 59</label>
+        <button onclick="close_system_window('${type}')">Ok</button>`
+        window.system_windows[type].notification(content)
+    } else if (type == "Deletar") {
+        let content = `
+        <h1>Tem certeza que deseja deletar?</h1>
+        <label>A ação não pode ser desfeita!</label>
+        <button onclick="close_system_window('${type}')">Sim</button>
+        <button onclick="close_system_window('${type}')">Não</button>`
+        window.system_windows[type].notification(content)
+    } else if (type == "Cadastrar Jogador") {
+        window.system_windows[type].SignIn()
+    }
+
     if (type == "Editar Recompensa") {
         document.getElementById("create-recomp-title").value = window.reg_recomp[_id_].title
         document.getElementById("create-recomp-dificuldade").value = window.reg_recomp[_id_].dificuldade
@@ -354,7 +564,7 @@ let open_system_window = (type, _id_ = null) => {
 }
 
 let close_system_window = (type) => {
-    document.body.removeChild(window.system_windows[type])
+    document.body.removeChild(window.system_windows[type].system_window)
     delete window.system_windows[type]
 }
 
