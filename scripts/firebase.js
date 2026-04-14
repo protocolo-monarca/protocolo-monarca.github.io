@@ -106,7 +106,7 @@ window.loadInterface = () => {
     try {
         close_system_window("Cadastrar Jogador")
     } catch (error) {
-        console.log(error)
+
     }
 
     close_loader_screen()
@@ -372,7 +372,6 @@ window.finishMission = async (_id_, completed = true || false) => {
         if (window.missoes[_id_].recompensa != "Sem recompensa") {
             await receberRecompensa(_id_, window.missoes[_id_].recompensa)
         }
-
     } else {
         // loseAtrib(["Disciplina"])
         if (window.missoes[_id_].penalidade != "Sem penalidade") {
