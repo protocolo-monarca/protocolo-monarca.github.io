@@ -117,6 +117,7 @@ window.createPlayer = async () => {
     const userRef = doc(db, "Users", uid);
     const userSnap = await getDoc(userRef);
     const user = window.currentUser
+    window.user = new User({});
 
     const player_name_elem = document.getElementById("creator_name")
     const player_name = player_name_elem.value

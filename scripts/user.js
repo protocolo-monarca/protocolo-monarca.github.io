@@ -1,11 +1,11 @@
 class User {
     constructor(data) {
-        this.name = data.name || "";
-        this.level = data.level || 1;
-        this.xp = data.xp || 0;
-        this.email = data.email || "";
-        this.atributos = data.atributos || {};
-        this.config = data.config || {};
+        this.name = data['name'] || "";
+        this.level = data['level'] || 1;
+        this.xp = data['xp'] || 0;
+        this.email = data['email'] || "";
+        this.atributos = data['atributos'] || {};
+        this.config = data['config'] || {};
     }
     toJSON() {
         return {
