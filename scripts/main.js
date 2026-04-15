@@ -63,7 +63,7 @@ function mainLoop() {
             // console.log(missao.repeat)
 
             // console.log(no_finish_days)
-            for (let i = 1; i <= no_finish_days; i++) {
+            for (let i = 1; i < no_finish_days; i++) {
                 let clock_day_i = change_data(clock_finish_mission, i)
 
                 if (missao.tipo == list_type[1]) {
