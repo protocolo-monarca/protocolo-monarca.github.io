@@ -1,9 +1,9 @@
 :root {
-    --font-size: 5rem;
+    /*--font-size: 5rem;*/
 }
 
 body {
-    font-size: calc(var(--font-size) - 2.5rem);
+    /*font-size: calc(var(--font-size) - 2.5rem);*/
 }
 
 .container {
@@ -21,18 +21,18 @@ body {
 }
 
 button {
-    font-size: calc(var(--font-size) - 2rem);
+    /*font-size: calc(var(--font-size) - 2rem);*/
 }
 
 .form-system button {
     margin-top: 10px;
-    font-size: calc(var(--font-size) - 1rem);
+    /*font-size: calc(var(--font-size) - 1rem);*/
     padding: 1rem;
 }
 
 
 .sidebar li {
-    font-size: calc(var(--font-size) - 1rem);
+    /*font-size: calc(var(--font-size) - 1rem);*/
 }
 
 .sidebar ._icon_ {
