@@ -89,7 +89,7 @@ button:hover {
     padding: 1rem;
     width: 100%;
     height: 100%;
-    font-size: calc(var(--font-size) - 1rem);
+    /*font-size: calc(var(--font-size) - 1rem);*/
 }
 
 
@@ -116,7 +116,7 @@ button:hover {
 .form-system select,
 .form-system textarea {
     padding: 1rem;
-    font-size: calc(var(--font-size) - 2rem);
+    /*font-size: calc(var(--font-size) - 2rem);*/
     margin-bottom: 1rem;
 }
 
@@ -145,15 +145,15 @@ button:hover {
 
 .system_dificuldade li strong,
 .system_disp li strong {
-    font-size: calc(var(--font-size) - 1.5rem);
+    /*font-size: calc(var(--font-size) - 1.5rem);*/
 }
 
 .system_dificuldade li p {
-    font-size: calc(var(--font-size) - 2rem);
+    /*font-size: calc(var(--font-size) - 2rem);*/
 }
 
 .system_disp li button {
-    font-size: calc(var(--font-size) - 1rem);
+    /*font-size: calc(var(--font-size) - 1rem);*/
     padding: 1rem;
     width: 100%;
 }
