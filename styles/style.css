@@ -337,7 +337,6 @@ input {
 
 
 .mission-list {
-    scroll-behavior: smooth;
     list-style: none;
     max-height: 600px;
     overflow-y: auto;
@@ -510,6 +509,8 @@ input {
 .system_dificuldade li,
 .system_disp li,
 .system_disp_penal li {
+    display: flex;
+    flex-direction: column;
     text-align: center;
     padding: var(--font-size);
     width: 20rem;
@@ -532,9 +533,17 @@ input {
     background-color: var(--cor-green);
 }
 
-.system_disp li button {
+.system_disp li button,
+.system_disp_penal li button {
     font-size: calc(var(--font-size) - .5rem);
 }
+
+.system_disp li .duracao,
+.system_disp_penal li .duracao {
+    margin-bottom: auto;
+}
+
+
 
 .system_disp_penal li {
     background-color: var(--cor-red);

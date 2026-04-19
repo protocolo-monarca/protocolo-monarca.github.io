@@ -422,7 +422,7 @@ window.createRecompensa = async function (_id_ = null) {
     if (!title) {
         title_elem.style.borderColor = "red"
         return;
-    } else if (title == "Sem recompensa") {
+    } else if (title == "Sem recompensa" || title == "Aleatório") {
         title_elem.style.borderColor = "red"
         open_system_window("Título Bloqueado")
         return;
@@ -482,6 +482,13 @@ window.deleteRecompensa = async function (_id_) {
 
 window.receberRecompensa = async function (idMission, idRecomp) {
     const ref = collection(db, "Users", window.uid, "recompensas");
+
+    if (idRecomp == "Aleatório") {
+        let keys_recomp = Object.keys(window.reg_recomp)
+        const index = Math.floor(Math.random() * keys_recomp.length);
+        idRecomp = keys_recomp[index]
+    }
+
     const title = window.reg_recomp[idRecomp].title
     const descricao = window.reg_recomp[idRecomp].descricao
     const dificuldade = window.reg_recomp[idRecomp].dificuldade
@@ -551,7 +558,7 @@ window.createPenalidade = async function (_id_ = null) {
     if (!title) {
         title_elem.style.borderColor = "red"
         return;
-    } else if (title == "Sem penalidade") {
+    } else if (title == "Sem penalidade" || title == "Aleatório") {
         title_elem.style.borderColor = "red"
         open_system_window("Título Bloqueado")
         return;
@@ -611,6 +618,13 @@ window.deletePenalidade = async function (_id_) {
 
 window.receberPenalidade = async function (idMission, idPenal, data_penalidade = null) {
     const ref = collection(db, "Users", window.uid, "penalidades");
+
+    if (idPenal == "Aleatório") {
+        let keys_penal = Object.keys(window.reg_penal)
+        const index = Math.floor(Math.random() * keys_penal.length);
+        idPenal = keys_penal[index]
+    }
+
     const title = window.reg_penal[idPenal].title
     const descricao = window.reg_penal[idPenal].descricao
     const dificuldade = window.reg_penal[idPenal].dificuldade

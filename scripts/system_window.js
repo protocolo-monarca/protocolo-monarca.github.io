@@ -1,35 +1,35 @@
 class SystemWindow {
-    constructor(type, _id_) {
+    constructor(title, _id_) {
         play_effect_sound()
-        this.type = type
+        this.title = title
+        this.id_window = crypto.randomUUID();
         this._id_ = _id_
         this.system_window = document.createElement("div");
         this.system_window.className = "window_system"
         this.system_window.innerHTML = `
-        <div class="bg_window" onclick="close_system_window('${type}')" ></div>
+        <div class="bg_window" onclick="close_system_window('${this.id_window}')" ></div>
         <div class="content_window card">
-            <button class="close_button" onclick="close_system_window('${type}')" class="button"> X </button>
+            <button class="close_button" onclick="close_system_window('${this.id_window}')" class="button"> X </button>
             <h2>Title</h2>
             <hr class="divider">
         </div>`
         document.body.appendChild(this.system_window)
 
         this.content_window = this.system_window.children[1]
-        let title = this.content_window.children[1]
-        title.innerText = type
+        let title_elem = this.content_window.children[1]
+        title_elem.innerText = title
         this.form_system = document.createElement("div");
         this.form_system.className = "form-system"
         this.content_window.appendChild(this.form_system);
     }
 
-
     new_or_edit_mission() {
         let function_button;
         let button_delete;
-        if (this.type == "Criar nova Missão") {
+        if (this.title == "Criar nova Missão") {
             function_button = "createMission()"
             button_delete = ""
-        } else if (this.type == "Editar Missão") {
+        } else if (this.title == "Editar Missão") {
             function_button = `createMission('${this._id_}')`
             button_delete = `<button onclick="deleteMission('${this._id_}')">Excluir</button>`
         }
@@ -68,11 +68,11 @@ class SystemWindow {
                 <label>Dificuldade</label>
                 <select id="create-mission-dificuldade" onchange="updateDificuldade(this.value)">
                     <option value="" disabled selected>Selecione...</option>
-                    <option value="${niveis_dific[0]}">${niveis_dific[0]}</option>
                     <option value="${niveis_dific[1]}">${niveis_dific[1]}</option>
                     <option value="${niveis_dific[2]}">${niveis_dific[2]}</option>
                     <option value="${niveis_dific[3]}">${niveis_dific[3]}</option>
                     <option value="${niveis_dific[4]}">${niveis_dific[4]}</option>
+                    <option value="${niveis_dific[5]}">${niveis_dific[5]}</option>
                 </select>
             </div>
             <div>
@@ -95,7 +95,7 @@ class SystemWindow {
                 ${atributos_label}
             </div>
 
-            <button id="" onclick="${function_button}">${this.type}</button>${button_delete}`)
+            <button id="" onclick="${function_button}">${this.title}</button>${button_delete}`)
     }
     recompensas() {
         let html_text = `
@@ -131,10 +131,10 @@ class SystemWindow {
         }
         html_text += `</ul>`
 
-        for (let i = 0; i <= 4; i++) {
+        for (let i = 0; i <= 5; i++) {
             html_text += `<hr class="mini-divider">
                 <h3>${niveis_dific[i]}</h3>
-                <ul id="${this.type}-${i}" class="system_dificuldade">`
+                <ul id="${this.title}-${i}" class="system_dificuldade">`
             for (let id in window.reg_recomp) {
                 let _reg_recomp_ = window.reg_recomp[id]
                 if (_reg_recomp_.dificuldade == niveis_dific[i]) {
@@ -183,10 +183,10 @@ class SystemWindow {
         }
         html_text += `</ul>`
 
-        for (let i = 0; i <= 4; i++) {
+        for (let i = 0; i <= 5; i++) {
             html_text += `<hr class="mini-divider">
                 <h3>${niveis_dific[i]}</h3>
-                <ul id="${this.type}-${i}" class="system_dificuldade">`
+                <ul id="${this.title}-${i}" class="system_dificuldade">`
             for (let id in window.reg_penal) {
                 let _reg_penal_ = window.reg_penal[id]
                 if (_reg_penal_.dificuldade == niveis_dific[i]) {
@@ -204,10 +204,10 @@ class SystemWindow {
     new_or_edit_recomp() {
         let function_button;
         let button_delete;
-        if (this.type == "Criar Recompensa") {
+        if (this.title == "Criar Recompensa") {
             function_button = "createRecompensa()"
             button_delete = ""
-        } else if (this.type == "Editar Recompensa") {
+        } else if (this.title == "Editar Recompensa") {
             function_button = `createRecompensa('${this._id_}')`
             button_delete = `<button onclick="deleteRecompensa('${this._id_}')">Excluir</button>`
         }
@@ -225,6 +225,7 @@ class SystemWindow {
                     <option value="${niveis_dific[2]}">${niveis_dific[2]}</option>
                     <option value="${niveis_dific[3]}">${niveis_dific[3]}</option>
                     <option value="${niveis_dific[4]}">${niveis_dific[4]}</option>
+                    <option value="${niveis_dific[5]}">${niveis_dific[5]}</option>
                 </select>
             </div>
             <div>
@@ -235,7 +236,7 @@ class SystemWindow {
                 </div>
             </div>
             <textarea id="create-recomp-desc" placeholder="Descrição da Recompensa"></textarea>
-            <button onclick="${function_button}">${this.type}</button>${button_delete}
+            <button onclick="${function_button}">${this.title}</button>${button_delete}
             `
 
         this.setContent(html_text)
@@ -243,10 +244,10 @@ class SystemWindow {
     new_or_edit_penal() {
         let function_button;
         let button_delete;
-        if (this.type == "Criar Penalidade") {
+        if (this.title == "Criar Penalidade") {
             function_button = "createPenalidade()"
             button_delete = ""
-        } else if (this.type == "Editar Penalidade") {
+        } else if (this.title == "Editar Penalidade") {
             function_button = `createPenalidade('${this._id_}')`
             button_delete = `<button onclick="deletePenalidade('${this._id_}')">Excluir</button>`
         }
@@ -264,6 +265,7 @@ class SystemWindow {
                     <option value="${niveis_dific[2]}">${niveis_dific[2]}</option>
                     <option value="${niveis_dific[3]}">${niveis_dific[3]}</option>
                     <option value="${niveis_dific[4]}">${niveis_dific[4]}</option>
+                    <option value="${niveis_dific[5]}">${niveis_dific[5]}</option>
                 </select>
             </div>
             <div>
@@ -274,7 +276,7 @@ class SystemWindow {
                 </div>
             </div>
             <textarea id="create-penal-desc" placeholder="Descrição da Penalidade"></textarea>
-            <button onclick="${function_button}">${this.type}</button>${button_delete}`;
+            <button onclick="${function_button}">${this.title}</button>${button_delete}`;
         this.setContent(html_text)
     }
     edit_status() {
@@ -355,7 +357,7 @@ class SystemWindow {
         this.setContent(html_text)
     }
     notification(content) {
-        talk(this.type)
+        talk(this.title)
         this.content_window.style.width = "40rem"
         this.setContent(content)
     }
@@ -365,13 +367,13 @@ class SystemWindow {
     }
 }
 
-function confirmSystem(type, datas = null) {
+function confirmSystem(title, datas = null) {
     return new Promise((resolve) => {
-        window.system_windows[type] = new SystemWindow(type);
-        const win = window.system_windows[type];
+        let sys_window = new SystemWindow(title)
+        window.system_windows[sys_window.id_window] = sys_window;
 
         let content
-        if (type == "Deletar") {
+        if (title == "Deletar") {
             content = `
                 <h1>Tem certeza que deseja deletar?</h1>
                 <label>A ação não pode ser desfeita!</label>
@@ -380,7 +382,7 @@ function confirmSystem(type, datas = null) {
                     <button class="btn-confirm"  id="confirm-no">Não</button>
                 </div>
             `;
-        } else if (type == "Confirmar Edição de Atributos") {
+        } else if (title == "Confirmar Edição de Atributos") {
             content = `
                 <h1>O progresso do (s) atributo(s) deletado(s) serão apagados, deseja continuar?</h1>
                 <label>A ação não pode ser desfeita!</label>
@@ -389,7 +391,7 @@ function confirmSystem(type, datas = null) {
                     <button class="btn-confirm"  id="confirm-no">Não</button>
                 </div>
             `;
-        } else if (type == "Finalizar Missão") {
+        } else if (title == "Finalizar Missão") {
             content = `
                 <h1>Deseja finalizar a missão?</h1>
                 <label>(${datas})</label>
@@ -398,7 +400,7 @@ function confirmSystem(type, datas = null) {
                     <button class="btn-confirm" id="confirm-no">Não</button>
                 </div>
             `;
-        } else if (type == "PROTOCOLO MONARCA DISPONÍVEL") {
+        } else if (title == "PROTOCOLO MONARCA DISPONÍVEL") {
             content = `
                 <label>Você tem a oportunidade de se tornar um jogador!</label>
                 <h1>Deseja iniciar o SISTEMA?</h1>
@@ -409,44 +411,45 @@ function confirmSystem(type, datas = null) {
             `;
         }
 
-        win.notification(content);
+        sys_window.notification(content);
 
         document.getElementById("confirm-yes").onclick = () => {
-            close_system_window(type);
+            close_system_window(sys_window.id_window);
             resolve(true);
         };
 
         document.getElementById("confirm-no").onclick = () => {
-            close_system_window(type);
+            close_system_window(sys_window.id_window);
             resolve(false);
         };
     });
 }
 
-let open_system_window = (type, _id_ = null) => {
-    window.system_windows[type] = new SystemWindow(type, _id_)
+let open_system_window = (title, _id_ = null) => {
+    let sys_window = new SystemWindow(title, _id_)
+    window.system_windows[sys_window.id_window] = sys_window;
 
-    if (type == "Criar nova Missão" || type == "Editar Missão") {
-        window.system_windows[type].new_or_edit_mission()
-    } else if (type == "Recompensas") {
-        window.system_windows[type].recompensas()
-    } else if (type == "Penalidades") {
-        window.system_windows[type].penalidades()
-    } else if (type == "Criar Recompensa" || type == "Editar Recompensa") {
-        window.system_windows[type].new_or_edit_recomp()
-    } else if (type == "Criar Penalidade" || type == "Editar Penalidade") {
-        window.system_windows[type].new_or_edit_penal()
-    } else if (type == "Editar Status") {
-        window.system_windows[type].edit_status()
-    } else if (type == "Editar Atributos") {
-        window.system_windows[type].edit_atributos()
-    } else if (type == "Level Up!") {
+    if (title == "Criar nova Missão" || title == "Editar Missão") {
+        window.system_windows[sys_window.id_window].new_or_edit_mission()
+    } else if (title == "Recompensas") {
+        window.system_windows[sys_window.id_window].recompensas()
+    } else if (title == "Penalidades") {
+        window.system_windows[sys_window.id_window].penalidades()
+    } else if (title == "Criar Recompensa" || title == "Editar Recompensa") {
+        window.system_windows[sys_window.id_window].new_or_edit_recomp()
+    } else if (title == "Criar Penalidade" || title == "Editar Penalidade") {
+        window.system_windows[sys_window.id_window].new_or_edit_penal()
+    } else if (title == "Editar Status") {
+        window.system_windows[sys_window.id_window].edit_status()
+    } else if (title == "Editar Atributos") {
+        window.system_windows[sys_window.id_window].edit_atributos()
+    } else if (title == "Level Up!") {
         let content = `
         <h1>Parabéns!</h1>
         <p style="text-align: center;">Você subiu de nível!</p>
-        <button onclick="close_system_window('${type}')">Ok</button>`
-        window.system_windows[type].notification(content)
-    } else if (type == "Penalidade Recebida") {
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Penalidade Recebida") {
         let content = `
         <h1>Você recebeu uma penalidade!</h1>
         <label>Título: ${window.penalidades[_id_].title}</label>
@@ -455,9 +458,9 @@ let open_system_window = (type, _id_ = null) => {
         <label>Duração: ${String(window.penalidades[_id_].duration[0]).padStart(2, '0')}:${String(window.penalidades[_id_].duration[1]).padStart(2, '0')}</label>
         <label>Dificuldade: ${window.penalidades[_id_].dificuldade}</label>
         <label>Missão: ${window.penalidades[_id_].mission_title}</label>
-        <button onclick="close_system_window('${type}')">Ok</button>`
-        window.system_windows[type].notification(content)
-    } else if (type == "Recompensa Recebida") {
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Recompensa Recebida") {
         let content = `
         <h1>Parabens! Você recebeu uma recomepensa!</h1>
         <label>Título: ${window.recompensas[_id_].title}</label>
@@ -466,45 +469,45 @@ let open_system_window = (type, _id_ = null) => {
         <label>Duração: ${String(window.recompensas[_id_].duration[0]).padStart(2, '0')}:${String(window.recompensas[_id_].duration[1]).padStart(2, '0')}</label>
         <label>Dificuldade: ${window.recompensas[_id_].dificuldade}</label>
         <label>Missão: ${window.recompensas[_id_].mission_title}</label>
-        <button onclick="close_system_window('${type}')">Ok</button>`
-        window.system_windows[type].notification(content)
-    } else if (type == "Erro!") {
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Erro!") {
         let content = `
         <h1>Erro ao Deletar</h1>
         <label>Por Favor informe ao Administrador do erro: </label>
         <label>${_id_}</label>
-        <button onclick="close_system_window('${type}')">Ok</button>`
-        window.system_windows[type].notification(content)
-    } else if (type == "Mínimo de Atributos!") {
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Mínimo de Atributos!") {
         let content = `
         <h1>Mínimo 3 Atributos!</h1>
         <label>É obrigatório no mínimo 3 Atributos!</label>
-        <button onclick="close_system_window('${type}')">Ok</button>`
-        window.system_windows[type].notification(content)
-    } else if (type == "Título Bloqueado") {
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Título Bloqueado") {
         let content = `
         <h1>Esse Título não é permitido</h1>
         <label>O título está reservado pelo sistema, por favor use outro!</label>
-        <button onclick="close_system_window('${type}')">Ok</button>`
-        window.system_windows[type].notification(content)
-    } else if (type == "Duração dos minutos!") {
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Duração dos minutos!") {
         let content = `
         <h1>Valor Máximo para duração dos minutos</h1>
         <label>Duração dos minutos não pode ser maior que 59</label>
-        <button onclick="close_system_window('${type}')">Ok</button>`
-        window.system_windows[type].notification(content)
-    } else if (type == "Deletar") {
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Deletar") {
         let content = `
         <h1>Tem certeza que deseja deletar?</h1>
         <label>A ação não pode ser desfeita!</label>
-        <button onclick="close_system_window('${type}')">Sim</button>
-        <button onclick="close_system_window('${type}')">Não</button>`
-        window.system_windows[type].notification(content)
-    } else if (type == "Cadastrar Jogador") {
-        window.system_windows[type].SignIn()
+        <button onclick="close_system_window('${sys_window.id_window}')">Sim</button>
+        <button onclick="close_system_window('${sys_window.id_window}')">Não</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Cadastrar Jogador") {
+        window.system_windows[sys_window.id_window].SignIn()
     }
 
-    if (type == "Editar Recompensa") {
+    if (title == "Editar Recompensa") {
         document.getElementById("create-recomp-title").value = window.reg_recomp[_id_].title
         document.getElementById("create-recomp-dificuldade").value = window.reg_recomp[_id_].dificuldade
         let dur_timestamp = window.reg_recomp[_id_].duration || 0
@@ -512,7 +515,7 @@ let open_system_window = (type, _id_ = null) => {
         document.getElementById("dur_recomp_horas").value = String(dur_timestamp[0]).padStart(2, '0')
         document.getElementById("dur_recomp_min").value = String(dur_timestamp[1]).padStart(2, '0')
         document.getElementById("create-recomp-desc").value = window.reg_recomp[_id_].descricao
-    } else if (type == "Editar Penalidade") {
+    } else if (title == "Editar Penalidade") {
         document.getElementById("create-penal-title").value = window.reg_penal[_id_].title
         document.getElementById("create-penal-dificuldade").value = window.reg_penal[_id_].dificuldade
         let dur_timestamp = window.reg_penal[_id_].duration || 0
@@ -520,7 +523,7 @@ let open_system_window = (type, _id_ = null) => {
         document.getElementById("dur_penal_horas").value = String(dur_timestamp[0]).padStart(2, '0')
         document.getElementById("dur_penal_min").value = String(dur_timestamp[1]).padStart(2, '0')
         document.getElementById("create-penal-desc").value = window.reg_penal[_id_].descricao
-    } else if (type == "Editar Missão") {
+    } else if (title == "Editar Missão") {
         document.getElementById("create-mission-title").value = window.missoes[_id_].title
         document.getElementById("create-missao-desc").value = window.missoes[_id_].descricao
 
@@ -537,7 +540,7 @@ let open_system_window = (type, _id_ = null) => {
                 }
             }
         }
-        document.getElementById("create-mission-dificuldade").selectedIndex = niveis_dific.indexOf(window.missoes[_id_].dificuldade) + 1;
+        document.getElementById("create-mission-dificuldade").selectedIndex = niveis_dific.indexOf(window.missoes[_id_].dificuldade);
         updateDificuldade(window.missoes[_id_].dificuldade)
         for (let i in Array.from(document.getElementById("recompensa_select").children)) {
             if (document.getElementById("recompensa_select").children[i].value == window.missoes[_id_].recompensa) {
@@ -557,24 +560,37 @@ let open_system_window = (type, _id_ = null) => {
             const atributo = window.missoes[_id_].atributos[atr_input]
             atributos_inputs[window.user.getAtributesKeys().indexOf(atributo)].checked = true
         }
-    } else if (type == "Editar Status") {
+    } else if (title == "Editar Status") {
         document.getElementById("input_edit_name").value = window.user.name
     }
     lucide.createIcons()
 }
 
-let close_system_window = (type) => {
-    document.body.removeChild(window.system_windows[type].system_window)
-    delete window.system_windows[type]
+let close_system_window = (id_window) => {
+    if (window.system_windows[id_window]) {
+        document.body.removeChild(window.system_windows[id_window].system_window)
+        delete window.system_windows[id_window]
+    } else {
+        title_window = id_window
+        for (let id in window.system_windows) {
+            let _window_ = window.system_windows[id]
+            if (_window_.title == title_window) {
+                document.body.removeChild(window.system_windows[id].system_window)
+                delete window.system_windows[id]
+                break
+            }
+        }
+    }
 }
 
 function updateDificuldade(dific) {
     const recompensa_select = document.getElementById("recompensa_select")
     let optionsRecomp = ""
     optionsRecomp += `<option value="Sem recompensa">Sem recompensa</option>`
+    optionsRecomp += `<option value="Aleatório">Aleatório</option>`
     for (let id in window.reg_recomp) {
         _reg_recomp_ = window.reg_recomp[id]
-        if (_reg_recomp_.dificuldade == dific) {
+        if (_reg_recomp_.dificuldade == dific || _reg_recomp_.dificuldade == niveis_dific[0]) {
             optionsRecomp += `<option value=${id}>${_reg_recomp_.title}</option>`
         }
     }
@@ -582,9 +598,10 @@ function updateDificuldade(dific) {
     const penalidade_select = document.getElementById("penalidade_select")
     let optionsPenal = ""
     optionsPenal += `<option value="Sem penalidade">Sem penalidade</option>`
+    optionsPenal += `<option value="Aleatório">Aleatório</option>`
     for (let id in window.reg_penal) {
         _reg_penal_ = window.reg_penal[id]
-        if (_reg_penal_.dificuldade == dific) {
+        if (_reg_penal_.dificuldade == dific || _reg_penal_.dificuldade == niveis_dific[0]) {
             optionsPenal += `<option value=${id}>${_reg_penal_.title}</option>`
         }
     }

@@ -1,6 +1,6 @@
 window.system_windows = {}
 _xpMax_ = null
-niveis_dific = ['Muito Fácil', 'Fácil', 'Médio', 'Difícil', 'Muito Difícil']
+niveis_dific = ['Não Definida', 'Muito Fácil', 'Fácil', 'Médio', 'Difícil', 'Muito Difícil']
 list_type = ["Única", "Diária", "Semanal", "Mensal"]
 
 let convert_data = (clock) => {
@@ -165,23 +165,27 @@ function updateMissions() {
             }
         }
         html_text += `<hr class="mini-divider"></hr>`
-        html_text += `<div>Descrição: ${mission.descricao}</div>`
+        html_text += `<div>Descrição: <br>${mission.descricao.replace(/\n/g, '<br>')}</div>`
         html_text += `<hr class="mini-divider"></hr>`
         html_text += `<div>Dificuldade: ${mission.dificuldade}</div>`
         html_text += `<hr class="mini-divider"></hr>`
-        for (let id in window.reg_recomp) {
-            let _reg_recomp_ = window.reg_recomp[id]
-            if (id == mission.recompensa) {
-                html_text += `<div>Recompensa: ${_reg_recomp_.title}</div>`
-                html_text += `<hr class="mini-divider"></hr>`
-            }
+
+
+        let _reg_recomp_ = window.reg_recomp[mission.recompensa]
+        if (_reg_recomp_) {
+            html_text += `<div>Recompensa: ${_reg_recomp_.title}</div>`
+            html_text += `<hr class="mini-divider"></hr>`
+        } else {
+            html_text += `<div>Recompensa: ${mission.recompensa}</div>`
+            html_text += `<hr class="mini-divider"></hr>`
         }
-        for (let id in window.reg_penal) {
-            let _reg_penal_ = window.reg_penal[id]
-            if (id == mission.penalidade) {
-                html_text += `<div>Penalidade: ${_reg_penal_.title}</div>`
-                html_text += `<hr class="mini-divider"></hr>`
-            }
+        let _reg_penal_ = window.reg_penal[mission.penalidade]
+        if (_reg_penal_) {
+            html_text += `<div>Penalidade: ${_reg_penal_.title}</div>`
+            html_text += `<hr class="mini-divider"></hr>`
+        } else {
+            html_text += `<div>Penalidade: ${mission.penalidade}</div>`
+            html_text += `<hr class="mini-divider"></hr>`
         }
         html_text += `<div>Atributos: ${mission.atributos.toString().replaceAll(",", ", ")}</div>`
         html_text += tempo_restante
