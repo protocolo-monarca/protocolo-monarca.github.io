@@ -152,33 +152,12 @@ window.createPlayer = async () => {
     // document.getElementById("signin").style.display = "none"
     open_loader_screen()
 
-    // Penalidade Padrão
-    let ref = collection(db, "Users", window.uid, "reg_penal");
-    const newPenal = {
-        title: "Pequena penalidade",
-        descricao: "15 flexões",
-        dificuldade: niveis_dific[0],
-        admin: true
-    };
-    const penal_doc_ref = await addDoc(ref, newPenal);
-
-    // Recompensa Padrao
-    ref = collection(db, "Users", window.uid, "reg_recomp");
-    const newRecomp = {
-        title: "Descanso Curto",
-        descricao: "5 min de pausa",
-        dificuldade: niveis_dific[0],
-        admin: true
-    };
-    let recomp_doc_ref = await addDoc(ref, newRecomp);
-
     // Missao Padrão
     // ref = collection(db, "Users", window.uid, "missoes");
     // const newMission = {
     //     title: "Treinamento de Força",
     //     tipo: "Diária",
     //     repeat: [],
-    //     dificuldade: niveis_dific[0],
     //     prazo: "",
     //     descricao: `- 10 flexoes,
     //     - 10 abdominais,
@@ -195,8 +174,6 @@ window.createPlayer = async () => {
     // console.log("Usuário criado!");
     window.reg_recomp = {}
     window.reg_penal = {}
-    window.reg_recomp[recomp_doc_ref.id] = newRecomp
-    window.reg_penal[penal_doc_ref.id] = newPenal
     window.missoes = {}
 
     loadInterface()
@@ -308,7 +285,7 @@ window.createMission = async function (_id_ = null) {
 
     if (_id_ == null) {
         const ref = collection(db, "Users", window.uid, "missoes");
-        const newMission = {
+        const newMission = new Mission({
             title: title,
             tipo: tipo,
             repeat: repeticao,
@@ -321,14 +298,14 @@ window.createMission = async function (_id_ = null) {
             atributos: atributos,
             completa: [],
             last_finish: null
-        };
-        const missao_doc_ref = await addDoc(ref, newMission);
+        });
+        const missao_doc_ref = await addDoc(ref, newMission.toJSON());
 
         window.missoes[missao_doc_ref.id] = newMission
         close_system_window("Criar nova Missão")
     } else {
         const ref = doc(db, "Users", window.uid, "missoes", _id_);
-        const datas = {
+        const datas = new Mission({
             title: title,
             tipo: tipo,
             repeat: repeticao,
@@ -337,8 +314,8 @@ window.createMission = async function (_id_ = null) {
             recompensa: recompensa,
             penalidade: penalidade,
             atributos: atributos,
-        };
-        await updateDoc(ref, datas);
+        });
+        await updateDoc(ref, datas.toJSON());
         window.missoes[_id_].title = datas.title
         window.missoes[_id_].tipo = datas.tipo
         window.missoes[_id_].repeat = datas.repeat
@@ -404,8 +381,8 @@ window.resetMissions = async (_id_) => {
     const datas = {
         completa: [],
     };
-    await updateDoc(missionRef, datas);
     window.missoes[_id_].completa = datas.completa
+    await updateDoc(missionRef, datas);
     updateMissions()
 }
 
@@ -413,7 +390,6 @@ window.resetMissions = async (_id_) => {
 window.createRecompensa = async function (_id_ = null) {
     const title_elem = document.getElementById("create-recomp-title")
     const title = title_elem.value;
-    const dificuldade = document.getElementById("create-recomp-dificuldade").value;
     const dur_horas = parseInt(document.getElementById("dur_recomp_horas").value) || 0;
     const dur_minutos_elem = document.getElementById("dur_recomp_min")
     const dur_minutos = parseInt(dur_minutos_elem.value) || 0;
@@ -437,27 +413,25 @@ window.createRecompensa = async function (_id_ = null) {
 
     if (_id_ == null) {
         const ref = collection(db, "Users", window.uid, "reg_recomp");
-        const newRecomp = {
+        const newRecomp = new Recompensa({
             title: title,
             descricao: desc,
-            dificuldade: dificuldade,
             admin: false,
             duration: dur_Ms
-        };
-        const recomp_doc_ref = await addDoc(ref, newRecomp);
+        });
+        const recomp_doc_ref = await addDoc(ref, newRecomp.toJSON());
         window.reg_recomp[recomp_doc_ref.id] = newRecomp
         close_system_window("Criar Recompensa")
     } else {
         const ref = doc(db, "Users", window.uid, "reg_recomp", _id_);
-        const datas = {
+        const newRegRecomp = new reg_recomp({
             title: title,
             descricao: desc,
-            dificuldade: dificuldade,
             admin: false,
             duration: dur_Ms
-        };
-        await updateDoc(ref, datas);
-        window.reg_recomp[_id_] = datas
+        });
+        await updateDoc(ref, newRegRecomp.toJSON());
+        window.reg_recomp[_id_] = newRegRecomp
         close_system_window("Editar Recompensa")
     }
     close_system_window("Recompensas")
@@ -491,7 +465,6 @@ window.receberRecompensa = async function (idMission, idRecomp) {
 
     const title = window.reg_recomp[idRecomp].title
     const descricao = window.reg_recomp[idRecomp].descricao
-    const dificuldade = window.reg_recomp[idRecomp].dificuldade
     let dur_timestamp = window.reg_recomp[idRecomp].duration || 0
     dur_timestamp = timestampParaHoraMin(dur_timestamp)
     const title_mission = window.missoes[idMission].title
@@ -499,7 +472,6 @@ window.receberRecompensa = async function (idMission, idRecomp) {
     const recomp = {
         title: title,
         descricao: descricao,
-        dificuldade: dificuldade,
         duration: dur_timestamp,
         data: Date.now(),
         mission_title: title_mission,
@@ -549,7 +521,6 @@ window.deletarRecomp = async (idRecomp, elem) => {
 window.createPenalidade = async function (_id_ = null) {
     const title_elem = document.getElementById("create-penal-title")
     const title = title_elem.value;
-    const dificuldade = document.getElementById("create-penal-dificuldade").value;
     const dur_horas = parseInt(document.getElementById("dur_penal_horas").value) || 0;
     const dur_minutos_elem = document.getElementById("dur_penal_min")
     const dur_minutos = parseInt(dur_minutos_elem.value) || 0;
@@ -573,27 +544,25 @@ window.createPenalidade = async function (_id_ = null) {
 
     if (_id_ == null) {
         const ref = collection(db, "Users", window.uid, "reg_penal");
-        const newPenal = {
+        const newPenal = new Penalidade({
             title: title,
             descricao: desc,
-            dificuldade: dificuldade,
             admin: false,
             duration: dur_Ms
-        };
-        let penal_doc_ref = await addDoc(ref, newPenal);
+        });
+        let penal_doc_ref = await addDoc(ref, newPenal.toJSON());
         window.reg_penal[penal_doc_ref.id] = newPenal
         close_system_window("Criar Penalidade")
     } else {
         const ref = doc(db, "Users", window.uid, "reg_penal", _id_);
-        const datas = {
+        const newRegPenal = new reg_penal({
             title: title,
             descricao: desc,
-            dificuldade: dificuldade,
             admin: false,
             duration: dur_Ms
-        };
-        await updateDoc(ref, datas);
-        window.reg_penal[_id_] = datas
+        });
+        await updateDoc(ref, newRegPenal.toJSON());
+        window.reg_penal[_id_] = newRegPenal
         close_system_window("Editar Penalidade")
     }
     close_system_window("Penalidades")
@@ -627,7 +596,6 @@ window.receberPenalidade = async function (idMission, idPenal, data_penalidade =
 
     const title = window.reg_penal[idPenal].title
     const descricao = window.reg_penal[idPenal].descricao
-    const dificuldade = window.reg_penal[idPenal].dificuldade
     let dur_timestamp = window.reg_penal[idPenal].duration || 0
     dur_timestamp = timestampParaHoraMin(dur_timestamp)
     const title_mission = window.missoes[idMission].title
@@ -638,7 +606,6 @@ window.receberPenalidade = async function (idMission, idPenal, data_penalidade =
     const penal = {
         title: title,
         descricao: descricao,
-        dificuldade: dificuldade,
         duration: dur_timestamp,
         data: data_penalidade,
         mission_title: title_mission,
@@ -654,10 +621,12 @@ window.receberPenalidade = async function (idMission, idPenal, data_penalidade =
 window.recebPenalidadeAtrasadas = async (_id_, data_penalidade) => {
     const missionRef = doc(db, "Users", window.uid, "missoes", _id_);
     const datas = {
-        last_finish: data_penalidade
+        last_finish: data_penalidade,
+        completa: [data_penalidade, false]
     };
     await updateDoc(missionRef, datas);
     window.missoes[_id_].last_finish = datas.last_finish
+    window.missoes[_id_].completa = datas.completa
 
     // loseAtrib(["Disciplina"])
     if (window.missoes[_id_].penalidade != "Sem penalidade") {

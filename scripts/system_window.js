@@ -66,7 +66,7 @@ class SystemWindow {
             </div>
             <div>
                 <label>Dificuldade</label>
-                <select id="create-mission-dificuldade" onchange="updateDificuldade(this.value)">
+                <select id="create-mission-dificuldade">
                     <option value="" disabled selected>Selecione...</option>
                     <option value="${niveis_dific[1]}">${niveis_dific[1]}</option>
                     <option value="${niveis_dific[2]}">${niveis_dific[2]}</option>
@@ -98,8 +98,10 @@ class SystemWindow {
             <button id="" onclick="${function_button}">${this.title}</button>${button_delete}`)
     }
     recompensas() {
-        let html_text = `
-            <h3>Disponiveis</h3>
+        let html_text = ``
+        html_text += `<button onclick="open_system_window('Criar Recompensa')">Criar Recompensa</button>`;
+        html_text +=
+            `<h3>Disponiveis</h3>
             <ul class="system_disp">`
 
         for (let id in window.recompensas) {
@@ -130,28 +132,25 @@ class SystemWindow {
             <button onclick="reinvindicarRecomp('${id}', this)" class="${class_btn}">Reinvindicar</button><button  onclick="deletarRecomp('${id}', this.parentNode)">Excluir</button></li>`
         }
         html_text += `</ul>`
-
-        for (let i = 0; i <= 5; i++) {
-            html_text += `<hr class="mini-divider">
-                <h3>${niveis_dific[i]}</h3>
-                <ul id="${this.title}-${i}" class="system_dificuldade">`
-            for (let id in window.reg_recomp) {
-                let _reg_recomp_ = window.reg_recomp[id]
-                if (_reg_recomp_.dificuldade == niveis_dific[i]) {
-                    html_text += `<li id="${id}" onclick="open_system_window('Editar Recompensa' , this.id)"><strong>${_reg_recomp_.title}</strong>
-                        <hr class="mini-divider">
-                        <p>${_reg_recomp_.descricao}</p></li>`
-                }
-            }
-            html_text += `</ul>`
+        html_text += `<hr class="mini-divider">
+            <h3>Recompensas Registradas</h3>
+            <ul class="system_reg">`
+        for (let id in window.reg_recomp) {
+            let _reg_recomp_ = window.reg_recomp[id]
+            html_text += `<li id="${id}" onclick="open_system_window('Editar Recompensa' , this.id)"><strong>${_reg_recomp_.title}</strong>
+                    <hr class="mini-divider">
+                    <p>${_reg_recomp_.descricao}</p></li>`
         }
+        html_text += `</ul>`
 
-        html_text += `<button onclick="open_system_window('Criar Recompensa')">Criar Recompensa</button>`;
         this.setContent(html_text)
     }
     penalidades() {
-        let html_text = `
-            <h3>Disponiveis</h3>
+        let html_text = ``
+
+        html_text += `<button onclick="open_system_window('Criar Penalidade')">Criar Penalidade</button>`;
+        html_text +=
+            `<h3>Disponiveis</h3>
             <ul class="system_disp_penal">`
 
         for (let id in window.penalidades) {
@@ -183,22 +182,19 @@ class SystemWindow {
         }
         html_text += `</ul>`
 
-        for (let i = 0; i <= 5; i++) {
-            html_text += `<hr class="mini-divider">
-                <h3>${niveis_dific[i]}</h3>
-                <ul id="${this.title}-${i}" class="system_dificuldade">`
-            for (let id in window.reg_penal) {
-                let _reg_penal_ = window.reg_penal[id]
-                if (_reg_penal_.dificuldade == niveis_dific[i]) {
-                    html_text += `<li id="${id}" onclick="open_system_window('Editar Penalidade', this.id)"><strong>${_reg_penal_.title}</strong>
-                        <hr class="mini-divider">
-                        <p>${_reg_penal_.descricao}</p></li>`
-                }
-            }
-            html_text += `</ul>`
-        }
 
-        html_text += `<button onclick="open_system_window('Criar Penalidade')">Criar Penalidade</button>`;
+        html_text += `<hr class="mini-divider">
+            <h3>Penalidades Registradas</h3>
+            <ul class="system_reg">`
+
+        for (let id in window.reg_penal) {
+            let _reg_penal_ = window.reg_penal[id]
+            html_text += `<li id="${id}" onclick="open_system_window('Editar Penalidade', this.id)"><strong>${_reg_penal_.title}</strong>
+                    <hr class="mini-divider">
+                    <p>${_reg_penal_.descricao}</p></li>`
+        }
+        html_text += `</ul>`
+
         this.setContent(html_text)
     }
     new_or_edit_recomp() {
@@ -216,17 +212,6 @@ class SystemWindow {
             <div>
                 <label>Título</label>
                 <input type="text" id="create-recomp-title" class="form-title-create" placeholder="Ex: 2 Horas de Descanso">
-            </div>
-            <div>
-                <label>Dificuldade</label>
-                <select id="create-recomp-dificuldade">
-                    <option value="${niveis_dific[0]}">${niveis_dific[0]}</option>
-                    <option value="${niveis_dific[1]}">${niveis_dific[1]}</option>
-                    <option value="${niveis_dific[2]}">${niveis_dific[2]}</option>
-                    <option value="${niveis_dific[3]}">${niveis_dific[3]}</option>
-                    <option value="${niveis_dific[4]}">${niveis_dific[4]}</option>
-                    <option value="${niveis_dific[5]}">${niveis_dific[5]}</option>
-                </select>
             </div>
             <div>
                 <label>Duração:</label>
@@ -256,17 +241,6 @@ class SystemWindow {
             <div>
                 <label>Título</label>
                 <input type="text" id="create-penal-title" class="form-title-create" placeholder="Ex: 12 Horas Offline (sem scrolling)">
-            </div>
-            <div>
-                <label>Dificuldade</label>
-                <select id="create-penal-dificuldade">
-                    <option value="${niveis_dific[0]}">${niveis_dific[0]}</option>
-                    <option value="${niveis_dific[1]}">${niveis_dific[1]}</option>
-                    <option value="${niveis_dific[2]}">${niveis_dific[2]}</option>
-                    <option value="${niveis_dific[3]}">${niveis_dific[3]}</option>
-                    <option value="${niveis_dific[4]}">${niveis_dific[4]}</option>
-                    <option value="${niveis_dific[5]}">${niveis_dific[5]}</option>
-                </select>
             </div>
             <div>
                 <label>Duração:</label>
@@ -509,7 +483,6 @@ let open_system_window = (title, _id_ = null) => {
 
     if (title == "Editar Recompensa") {
         document.getElementById("create-recomp-title").value = window.reg_recomp[_id_].title
-        document.getElementById("create-recomp-dificuldade").value = window.reg_recomp[_id_].dificuldade
         let dur_timestamp = window.reg_recomp[_id_].duration || 0
         dur_timestamp = timestampParaHoraMin(dur_timestamp)
         document.getElementById("dur_recomp_horas").value = String(dur_timestamp[0]).padStart(2, '0')
@@ -517,7 +490,6 @@ let open_system_window = (title, _id_ = null) => {
         document.getElementById("create-recomp-desc").value = window.reg_recomp[_id_].descricao
     } else if (title == "Editar Penalidade") {
         document.getElementById("create-penal-title").value = window.reg_penal[_id_].title
-        document.getElementById("create-penal-dificuldade").value = window.reg_penal[_id_].dificuldade
         let dur_timestamp = window.reg_penal[_id_].duration || 0
         dur_timestamp = timestampParaHoraMin(dur_timestamp)
         document.getElementById("dur_penal_horas").value = String(dur_timestamp[0]).padStart(2, '0')
@@ -541,7 +513,7 @@ let open_system_window = (title, _id_ = null) => {
             }
         }
         document.getElementById("create-mission-dificuldade").selectedIndex = niveis_dific.indexOf(window.missoes[_id_].dificuldade);
-        updateDificuldade(window.missoes[_id_].dificuldade)
+        updateDificuldade()
         for (let i in Array.from(document.getElementById("recompensa_select").children)) {
             if (document.getElementById("recompensa_select").children[i].value == window.missoes[_id_].recompensa) {
                 document.getElementById("recompensa_select").selectedIndex = i;
@@ -583,16 +555,14 @@ let close_system_window = (id_window) => {
     }
 }
 
-function updateDificuldade(dific) {
+function updateDificuldade() {
     const recompensa_select = document.getElementById("recompensa_select")
     let optionsRecomp = ""
     optionsRecomp += `<option value="Sem recompensa">Sem recompensa</option>`
     optionsRecomp += `<option value="Aleatório">Aleatório</option>`
     for (let id in window.reg_recomp) {
         _reg_recomp_ = window.reg_recomp[id]
-        if (_reg_recomp_.dificuldade == dific || _reg_recomp_.dificuldade == niveis_dific[0]) {
-            optionsRecomp += `<option value=${id}>${_reg_recomp_.title}</option>`
-        }
+        optionsRecomp += `<option value=${id}>${_reg_recomp_.title}</option>`
     }
 
     const penalidade_select = document.getElementById("penalidade_select")
@@ -601,9 +571,7 @@ function updateDificuldade(dific) {
     optionsPenal += `<option value="Aleatório">Aleatório</option>`
     for (let id in window.reg_penal) {
         _reg_penal_ = window.reg_penal[id]
-        if (_reg_penal_.dificuldade == dific || _reg_penal_.dificuldade == niveis_dific[0]) {
-            optionsPenal += `<option value=${id}>${_reg_penal_.title}</option>`
-        }
+        optionsPenal += `<option value=${id}>${_reg_penal_.title}</option>`
     }
     recompensa_select.innerHTML = optionsRecomp
     penalidade_select.innerHTML = optionsPenal

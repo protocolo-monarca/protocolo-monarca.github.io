@@ -6,6 +6,7 @@ class User {
         this.email = data['email'] || "";
         this.atributos = data['atributos'] || {};
         this.config = data['config'] || {};
+        this.last_active = data['config'] || Date.now();
     }
     toJSON() {
         return {
@@ -14,7 +15,8 @@ class User {
             xp: this.xp,
             email: this.email,
             atributos: this.atributos,
-            config: this.config
+            config: this.config,
+            last_active: Date.now()
         };
     }
 
