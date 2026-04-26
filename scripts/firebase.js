@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
     from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, setDoc, collection, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 // import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -18,6 +18,82 @@ const firebaseConfig = {
     appId: "1:1039056203304:web:ed8ec224dad62969ec0f1d",
     measurementId: "G-ZD59M6K6CZ"
 };
+
+let setHours = (clock, array) => {
+    let hora = array[0]
+    let min = array[1]
+    let seg = array[2]
+    let miliseg = array[3]
+    return new Date(clock).setHours(hora, min, seg, miliseg)
+}
+
+class FirebaseManager {
+    constructor(db, uid) {
+        this.db = db
+        this.uid = uid
+        this.ref_user = doc(db, "Users", uid)
+        this.ref_rewards = doc(db, "Users", uid, "Events", "Rewards");
+        this.ref_penalty = doc(db, "Users", uid, "Events", "Penalty");
+    }
+
+    addCounter(write = false) {
+        if (!window.user) { return }
+        const now = Date.now()
+        const time_zero = [0, 0, 0, 0]
+        if (!window.user['counterFB']["day"] || window.user['counterFB']["day"] < setHours(now, time_zero)) {
+            window.user['counterFB']["write"] = 0
+            window.user['counterFB']["read"] = 0
+            window.user['counterFB']["day"] = setHours(now, time_zero)
+        }
+        if (write) {
+            window.user['counterFB']["write"] = window.user['counterFB']["write"] + 1 || 1
+            if (!window.user['counterFB']["max_write"] || window.user['counterFB']["max_write"] < window.user['counterFB']["write"]) {
+                window.user['counterFB']["max_write"] = window.user['counterFB']["write"]
+            }
+        } else {
+            window.user['counterFB']["read"] = window.user['counterFB']["read"] + 1 || 1
+            if (!window.user['counterFB']["max_read"] || window.user['counterFB']["max_read"] < window.user['counterFB']["read"]) {
+                window.user['counterFB']["max_read"] = window.user['counterFB']["read"]
+            }
+        }
+    }
+    async getUserSnap() {
+        this.addCounter()
+        return await getDoc(this.ref_user);
+    }
+    limit_reached(where = '') {
+        if (where == 'MainLoop' && window.user['counterFB']["write"] > 450) { return true }
+        if (450 < window.user['counterFB']["write"] && window.user['counterFB']["write"] < 455) {
+            open_system_window("Limite Quase Atingido (Banco de dados)")
+            return false
+        } else if (window.user['counterFB']["write"] >= 500) {
+            open_system_window("Limite Atingido (Banco de dados)")
+            return true
+        }
+        if (450 < window.user['counterFB']["read"] && window.user['counterFB']["read"] < 455) {
+            open_system_window("Limite Quase Atingido (Banco de dados)")
+            return false
+        } else if (window.user['counterFB']["read"] >= 500) {
+            open_system_window("Limite Atingido (Banco de dados)")
+            return true
+        }
+    }
+    async updateUserDoc(where = "") {
+        let json_str = JSON.stringify(window.user.toJSON())
+        const _cache_ = sessionStorage.getItem("user_cache");
+
+        if (json_str == _cache_) { return }
+        if (this.limit_reached(where)) { return }
+
+        this.addCounter(true)
+
+        json_str = JSON.stringify(window.user.toJSON())
+        await setDoc(this.ref_user, window.user.toJSON());
+
+        sessionStorage.setItem("user_cache", json_str);
+        console.log("write doc: " + where)
+    }
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -36,55 +112,39 @@ window.loginGoogle = async function () {
     }
 };
 
-let getDataDB = async (_collection_, Classe = null) => {
-    const ref = collection(db, "Users", window.uid, _collection_);
-    const snapshot = await getDocs(ref);
-
-    let lista = {};
-
-    snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-
-        lista[docSnap.id] = Classe
-            ? new Classe(data)
-            : data;
-    });
-
-    return lista;
-};
-
 // DETECTAR LOGIN
 onAuthStateChanged(auth, async (user) => {
     open_loader_screen()
     // document.getElementById("loader").style.display = "fixed";
     window.currentUser = user
+    window.fbManager = new FirebaseManager(db, user.uid)
 
     if (user) {
-        const uid = user.uid;
-
-        const userRef = doc(db, "Users", uid);
-        const userSnap = await getDoc(userRef);
-        window.uid = uid
+        const userSnap = await window.fbManager.getUserSnap();
 
         if (!userSnap.exists()) {
             if (!(await confirmSystem("PROTOCOLO MONARCA DISPONÍVEL"))) { window.logout(); return };
             // console.log("Primeiro login, criando usuário...");
 
             open_system_window("Cadastrar Jogador")
-
-            // document.getElementById("signin").style.display = "flex"
             document.getElementById("creator_name").value = user.displayName
 
             document.getElementById("loginScreen").style.display = "none";
             close_loader_screen()
         } else {
             window.user = new User(userSnap.data());
-            // console.log("Usuário já existe");
-            window.reg_recomp = await getDataDB("reg_recomp", reg_recomp)
-            window.reg_penal = await getDataDB("reg_penal", reg_penal)
-            window.missoes = await getDataDB("missoes", Mission)
-            window.recompensas = await getDataDB("recompensas", Recompensa)
-            window.penalidades = await getDataDB("penalidades", Penalidade)
+            let key_missions = Object.keys(window.user.missions)
+            for (let i in key_missions) {
+                window.user.missions[key_missions[i]] = new Mission(window.user.missions[key_missions[i]]).toJSON()
+            }
+            let key_rewards = Object.keys(window.user.rewards)
+            for (let i in key_rewards) {
+                window.user.rewards[key_rewards[i]] = new Recompensa(window.user.rewards[key_rewards[i]]).toJSON()
+            }
+            let key_penalties = Object.keys(window.user.penalties)
+            for (let i in key_penalties) {
+                window.user.penalties[key_penalties[i]] = new Penalidade(window.user.penalties[key_penalties[i]]).toJSON()
+            }
 
             window.loadInterface()
         }
@@ -95,31 +155,27 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 window.loadInterface = () => {
-    const user = window.currentUser
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("player_name").innerText = window.user.name
     document.getElementById("system_interface").style.display = "block";
 
     updateStatus()
     updateMissions()
-    drawRadar(window.user.atributos);
+    drawRadar(window.user.attributes);
     try {
         close_system_window("Cadastrar Jogador")
     } catch (error) {
-
+        open_system_window("Erro!", error)
     }
 
+    sessionStorage.setItem("user_cache", JSON.stringify(window.user.toJSON()));
     close_loader_screen()
     setInterval(mainLoop, 20000);
     window.mainLoop()
-
 }
 
 // CRIAR JOGADOR
 window.createPlayer = async () => {
-    const userRef = doc(db, "Users", uid);
-    const userSnap = await getDoc(userRef);
-    const user = window.currentUser
     window.user = new User({});
 
     const player_name_elem = document.getElementById("creator_name")
@@ -142,39 +198,18 @@ window.createPlayer = async () => {
         open_system_window("Mínimo de Atributos!")
         return
     }
+    if (Object.keys(atributos).length > 10) {
+        open_system_window("Máximo de Atributos!")
+        return
+    }
 
     window.user["name"] = player_name
     window.user["email"] = user.email
-    window.user["atributos"] = atributos
+    window.user["attributes"] = atributos
 
-    await setDoc(userRef, window.user.toJSON());
+    await window.fbManager.updateUserDoc("Create Player")
 
-    // document.getElementById("signin").style.display = "none"
     open_loader_screen()
-
-    // Missao Padrão
-    // ref = collection(db, "Users", window.uid, "missoes");
-    // const newMission = {
-    //     title: "Treinamento de Força",
-    //     tipo: "Diária",
-    //     repeat: [],
-    //     prazo: "",
-    //     descricao: `- 10 flexoes,
-    //     - 10 abdominais,
-    //     - 10 agachamentos,
-    //     - 1km de corrida`,
-    //     recompensa: IDrecomp_doc_ref,
-    //     penalidade: IDpenal_doc_ref,
-    //     data: Date.now(),
-    //     atributos: ["Disciplina", "Força", "Vitalidade"],
-    //     completa: [] // data, true // // data, false
-    // };
-    // const IDmissao_doc_ref = await addDoc(ref, newMission).id;
-
-    // console.log("Usuário criado!");
-    window.reg_recomp = {}
-    window.reg_penal = {}
-    window.missoes = {}
 
     loadInterface()
 }
@@ -190,9 +225,11 @@ window.editStatus = async () => {
         name_elem.style.borderColor = ""
     }
 
-    const ref = doc(db, "Users", window.uid);
+
     window.user["name"] = name
-    await updateDoc(ref, window.user.toJSON());
+
+    await window.fbManager.updateUserDoc("Edit Status")
+
     close_system_window("Editar Status")
 
     updateStatus();
@@ -216,29 +253,24 @@ window.editAtrib = async () => {
     }
     if (!(await confirmSystem("Confirmar Edição de Atributos"))) { return };
 
-    window.user.atributos = atributos
-    const ref = doc(db, "Users", window.uid);
-    await updateDoc(ref, window.user.toJSON());
+    window.user.attributes = atributos
 
     let key_atributos = Object.keys(atributos)
-    let key_missions = Object.keys(window.missoes)
+    let key_missions = Object.keys(window.user.missions)
     for (let i = 0; i < key_missions.length; i++) {
-        let mission = window.missoes[key_missions[i]]
+        let mission = window.user.missions[key_missions[i]]
         // filtra corretamente
-        mission.atributos = mission.atributos.filter(attr =>
+        mission.attributes = mission.attributes.filter(attr =>
             key_atributos.includes(attr)
         )
-
-        // salva cada missão individualmente
-        const missionRef = doc(db, "Users", window.uid, "missoes", key_missions[i])
-        await updateDoc(missionRef, {
-            atributos: mission.atributos
-        })
     }
+
+    await window.fbManager.updateUserDoc(`Edit Attribute`)
+
     close_system_window("Editar Atributos")
     updateMissions()
 
-    drawRadar(window.user.atributos);
+    drawRadar(window.user.attributes);
 }
 
 // LOGOUT (opcional)
@@ -249,9 +281,14 @@ window.logout = function () {
 
 //Missão
 window.createMission = async function (_id_ = null) {
+    document.getElementById("save_mission_button").disabled = true
+    if (Object.keys(window.user.missions).length >= 10) {
+        open_system_window("Limite Atingido")
+        return
+    }
     const title_elem = document.getElementById("create-mission-title")
     const title = title_elem.value;
-    const tipo = document.getElementById("create-mission-type").value;
+    const tipo = list_type.indexOf(document.getElementById("create-mission-type").value);
     const repeticao = getRepeticao()
     const dificuldade_elem = document.getElementById("create-mission-dificuldade");
     const dificuldade = dificuldade_elem.value;
@@ -284,46 +321,46 @@ window.createMission = async function (_id_ = null) {
     if (error) { return }
 
     if (_id_ == null) {
-        const ref = collection(db, "Users", window.uid, "missoes");
         const newMission = new Mission({
             title: title,
-            tipo: tipo,
+            type: tipo,
             repeat: repeticao,
-            dificuldade: dificuldade,
-            prazo: "",
-            descricao: desc,
-            recompensa: recompensa,
-            penalidade: penalidade,
-            data: Date.now(),
-            atributos: atributos,
-            completa: [],
+            difficulty: dificuldade,
+            term: "",
+            description: desc,
+            rewards: recompensa,
+            penalty: penalidade,
+            date: Date.now(),
+            attributes: atributos,
+            complete: [],
             last_finish: null
         });
-        const missao_doc_ref = await addDoc(ref, newMission.toJSON());
-
-        window.missoes[missao_doc_ref.id] = newMission
+        const idMission = crypto.randomUUID();
+        window.user.missions[idMission] = newMission.toJSON()
+        await window.fbManager.updateUserDoc("Create Mission")
         close_system_window("Criar nova Missão")
     } else {
-        const ref = doc(db, "Users", window.uid, "missoes", _id_);
         const datas = new Mission({
             title: title,
-            tipo: tipo,
+            type: tipo,
             repeat: repeticao,
-            dificuldade: dificuldade,
-            descricao: desc,
-            recompensa: recompensa,
-            penalidade: penalidade,
-            atributos: atributos,
+            difficulty: dificuldade,
+            term: "",
+            description: desc,
+            rewards: recompensa,
+            penalty: penalidade,
+            attributes: atributos
         });
-        await updateDoc(ref, datas.toJSON());
-        window.missoes[_id_].title = datas.title
-        window.missoes[_id_].tipo = datas.tipo
-        window.missoes[_id_].repeat = datas.repeat
-        window.missoes[_id_].dificuldade = datas.dificuldade
-        window.missoes[_id_].descricao = datas.descricao
-        window.missoes[_id_].recompensa = datas.recompensa
-        window.missoes[_id_].penalidade = datas.penalidade
-        window.missoes[_id_].atributos = datas.atributos
+        window.user.missions[_id_].title = datas.title
+        window.user.missions[_id_].type = datas.type
+        window.user.missions[_id_].repeat = datas.repeat
+        window.user.missions[_id_].difficulty = datas.difficulty
+        window.user.missions[_id_].description = datas.description
+        window.user.missions[_id_].term = datas.term
+        window.user.missions[_id_].rewards = datas.rewards
+        window.user.missions[_id_].penalty = datas.penalty
+        window.user.missions[_id_].attributes = datas.attributes
+        await window.fbManager.updateUserDoc("Edit Mission")
         close_system_window("Editar Missão")
     }
     updateMissions()
@@ -333,42 +370,35 @@ window.finishMission = async (_id_, completed = true || false) => {
     let string_alert_completed = "Concluída"
     if (!completed) { string_alert_completed = "Malsucedida" }
     if (!(await confirmSystem("Finalizar Missão", string_alert_completed))) { return };
-    const missionRef = doc(db, "Users", window.uid, "missoes", _id_);
-    const datas = {
-        completa: [Date.now(), completed],
-        last_finish: Date.now()
-    };
-    await updateDoc(missionRef, datas);
-    window.missoes[_id_].completa = datas.completa
-    window.missoes[_id_].last_finish = datas.last_finish
+
+    const now = Date.now()
+    window.user.missions[_id_].complete = [now, completed]
+    window.user.missions[_id_].last_finish = now
     updateMissions()
 
     if (completed) {
-        window.user.gainXP((niveis_dific.indexOf(window.missoes[_id_].dificuldade) + 1) * 50)
-        window.user.gainAtrib(window.missoes[_id_].atributos)
-        if (window.missoes[_id_].recompensa != "Sem recompensa") {
-            await receberRecompensa(_id_, window.missoes[_id_].recompensa)
+        window.user.gainXP((niveis_dific.indexOf(window.user.missions[_id_].difficulty) + 1) * 50)
+        window.user.gainAtrib(window.user.missions[_id_].attributes)
+        if (window.user.missions[_id_].rewards != 0) {
+            await receberRecompensa(_id_, window.user.missions[_id_].rewards)
         }
     } else {
-        // loseAtrib(["Disciplina"])
-        if (window.missoes[_id_].penalidade != "Sem penalidade") {
-            await receberPenalidade(_id_, window.missoes[_id_].penalidade)
+        loseAtrib(indow.user.missions[_id_].attributes)
+        if (window.user.missions[_id_].penalty != 0) {
+            await receberPenalidade(_id_, window.user.missions[_id_].penalty)
         }
     }
+    await window.fbManager.updateUserDoc(`Finish Mission`)
+
     updateStatus();
-    drawRadar(window.user.atributos);
-    const userRef = doc(db, "Users", window.uid);
-    await updateDoc(userRef, window.user.toJSON());
+    drawRadar(window.user.attributes);
 }
 
 window.deleteMission = async function (_id_) {
     if (!(await confirmSystem("Deletar"))) return;
     try {
-        const ref = doc(db, "Users", window.uid, "missoes", _id_);
-
-        await deleteDoc(ref);
-
-        delete window.missoes[_id_];
+        delete window.user.missions[_id_];
+        await window.fbManager.updateUserDoc(`Delete Mission`)
     } catch (error) {
         open_system_window("Erro!", error)
     }
@@ -377,17 +407,17 @@ window.deleteMission = async function (_id_) {
 }
 
 window.resetMissions = async (_id_) => {
-    const missionRef = doc(db, "Users", window.uid, "missoes", _id_);
-    const datas = {
-        completa: [],
-    };
-    window.missoes[_id_].completa = datas.completa
-    await updateDoc(missionRef, datas);
+    window.user.missions[_id_].complete = []
+
     updateMissions()
 }
 
 // Recompensa
 window.createRecompensa = async function (_id_ = null) {
+    if (Object.keys(window.user.rewards_log).length >= 10) {
+        open_system_window("Limite Atingido")
+        return
+    }
     const title_elem = document.getElementById("create-recomp-title")
     const title = title_elem.value;
     const dur_horas = parseInt(document.getElementById("dur_recomp_horas").value) || 0;
@@ -398,7 +428,7 @@ window.createRecompensa = async function (_id_ = null) {
     if (!title) {
         title_elem.style.borderColor = "red"
         return;
-    } else if (title == "Sem recompensa" || title == "Aleatório") {
+    } else if (title == list_stand_mission[0] || title == list_stand_mission[1]) {
         title_elem.style.borderColor = "red"
         open_system_window("Título Bloqueado")
         return;
@@ -412,28 +442,26 @@ window.createRecompensa = async function (_id_ = null) {
     const dur_Ms = (dur_horas * 60 * 60 * 1000) + (dur_minutos * 60 * 1000);
 
     if (_id_ == null) {
-        const ref = collection(db, "Users", window.uid, "reg_recomp");
-        const newRecomp = new Recompensa({
+        const newRecomp = new reg_recomp({
             title: title,
-            descricao: desc,
+            description: desc,
             admin: false,
             duration: dur_Ms
         });
-        const recomp_doc_ref = await addDoc(ref, newRecomp.toJSON());
-        window.reg_recomp[recomp_doc_ref.id] = newRecomp
+        const idRewards = crypto.randomUUID();
+        window.user.rewards_log[idRewards] = newRecomp.toJSON()
         close_system_window("Criar Recompensa")
     } else {
-        const ref = doc(db, "Users", window.uid, "reg_recomp", _id_);
         const newRegRecomp = new reg_recomp({
             title: title,
-            descricao: desc,
+            description: desc,
             admin: false,
             duration: dur_Ms
         });
-        await updateDoc(ref, newRegRecomp.toJSON());
-        window.reg_recomp[_id_] = newRegRecomp
+        window.user.rewards_log[_id_] = newRegRecomp.toJSON()
         close_system_window("Editar Recompensa")
     }
+    await window.fbManager.updateUserDoc(`Create / Edit Rewards Log`)
     close_system_window("Recompensas")
     open_system_window("Recompensas")
 }
@@ -441,11 +469,12 @@ window.createRecompensa = async function (_id_ = null) {
 window.deleteRecompensa = async function (_id_) {
     if (!(await confirmSystem("Deletar"))) return;
     try {
-        const ref = doc(db, "Users", window.uid, "reg_recomp", _id_);
-
-        await deleteDoc(ref);
-
-        delete window.reg_recomp[_id_];
+        for (let i of Object.keys(window.user.missions)) {
+            let mission = window.user.missions[i]
+            if (mission.rewards = _id_) { mission.rewards = "0" }
+        }
+        delete window.user.rewards_log[_id_];
+        await window.fbManager.updateUserDoc(`Delete Rewards Log`)
     } catch (error) {
         open_system_window("Erro!", error)
     }
@@ -455,45 +484,44 @@ window.deleteRecompensa = async function (_id_) {
 }
 
 window.receberRecompensa = async function (idMission, idRecomp) {
-    const ref = collection(db, "Users", window.uid, "recompensas");
-
-    if (idRecomp == "Aleatório") {
-        let keys_recomp = Object.keys(window.reg_recomp)
+    if (idRecomp == 1) {
+        let keys_recomp = Object.keys(window.user.rewards_log)
+        if (keys_recomp.length == 0) {
+            await window.fbManager.updateUserDoc(`Receive Rewards`)
+            return
+        }
         const index = Math.floor(Math.random() * keys_recomp.length);
         idRecomp = keys_recomp[index]
     }
 
-    const title = window.reg_recomp[idRecomp].title
-    const descricao = window.reg_recomp[idRecomp].descricao
-    let dur_timestamp = window.reg_recomp[idRecomp].duration || 0
+    const title = window.user.rewards_log[idRecomp].title
+    const descricao = window.user.rewards_log[idRecomp].description
+    let dur_timestamp = window.user.rewards_log[idRecomp].duration || 0
     dur_timestamp = timestampParaHoraMin(dur_timestamp)
-    const title_mission = window.missoes[idMission].title
+    const title_mission = window.user.missions[idMission].title
 
-    const recomp = {
+    const recomp = new Recompensa({
         title: title,
-        descricao: descricao,
+        description: descricao,
         duration: dur_timestamp,
-        data: Date.now(),
+        date: Date.now(),
         mission_title: title_mission,
         mission_id: idMission,
-        reinvindicado: false
-    };
-    const recomp_doc_ref = await addDoc(ref, recomp);
-    window.recompensas[recomp_doc_ref.id] = recomp
-    open_system_window("Recompensa Recebida", recomp_doc_ref.id)
+        claimed: false
+    });
+    const idReward = crypto.randomUUID();
+    window.user.rewards[idReward] = recomp.toJSON()
+    await window.fbManager.updateUserDoc(`Receber Recompensa`)
+    open_system_window("Recompensa Recebida", idReward)
 }
 
 window.reinvindicarRecomp = async (idRecomp, elem) => {
-    const ref = doc(db, "Users", window.uid, "recompensas", idRecomp);
-    const reinvind_data = Date.now()
-    const datas = {
-        reinvindicado: reinvind_data
-    };
-    await updateDoc(ref, datas);
-    window.recompensas[idRecomp].reinvindicado = reinvind_data
+    window.user.rewards[idRecomp].claimed = Date.now()
+    await window.fbManager.updateUserDoc(`Reinvindicar Recompensa`)
+
     elem.parentNode.className = "claimed"
 
-    let [horas_rest, minutos_rest] = getTempoRestante(window.recompensas[idRecomp].reinvindicado, window.recompensas[idRecomp].duration)
+    let [horas_rest, minutos_rest] = getTempoRestante(window.user.rewards[idRecomp].claimed, window.user.rewards[idRecomp].duration)
     const duracaoDiv = elem.parentNode.querySelector(".duracao");
     duracaoDiv.insertAdjacentHTML("afterend", `
         <hr class="mini-divider">
@@ -505,11 +533,8 @@ window.reinvindicarRecomp = async (idRecomp, elem) => {
 window.deletarRecomp = async (idRecomp, elem) => {
     if (!(await confirmSystem("Deletar"))) return;
     try {
-        const ref = doc(db, "Users", window.uid, "recompensas", idRecomp);
-
-        await deleteDoc(ref);
-
-        delete window.recompensas[idRecomp];
+        delete window.user.rewards[idRecomp];
+        await window.fbManager.updateUserDoc(`Deletar Recompensa`)
     } catch (error) {
         open_system_window("Erro!", error)
     }
@@ -519,6 +544,10 @@ window.deletarRecomp = async (idRecomp, elem) => {
 
 // Penalidade
 window.createPenalidade = async function (_id_ = null) {
+    if (Object.keys(window.user.penalties_log).length >= 10) {
+        open_system_window("Limite Atingido")
+        return
+    }
     const title_elem = document.getElementById("create-penal-title")
     const title = title_elem.value;
     const dur_horas = parseInt(document.getElementById("dur_penal_horas").value) || 0;
@@ -529,7 +558,7 @@ window.createPenalidade = async function (_id_ = null) {
     if (!title) {
         title_elem.style.borderColor = "red"
         return;
-    } else if (title == "Sem penalidade" || title == "Aleatório") {
+    } else if (title == list_stand_mission[0] || title == list_stand_mission[1]) {
         title_elem.style.borderColor = "red"
         open_system_window("Título Bloqueado")
         return;
@@ -543,28 +572,26 @@ window.createPenalidade = async function (_id_ = null) {
     const dur_Ms = (dur_horas * 60 * 60 * 1000) + (dur_minutos * 60 * 1000);
 
     if (_id_ == null) {
-        const ref = collection(db, "Users", window.uid, "reg_penal");
-        const newPenal = new Penalidade({
+        const newPenal = new reg_penal({
             title: title,
-            descricao: desc,
+            description: desc,
             admin: false,
             duration: dur_Ms
         });
-        let penal_doc_ref = await addDoc(ref, newPenal.toJSON());
-        window.reg_penal[penal_doc_ref.id] = newPenal
+        const idPenalty = crypto.randomUUID();
+        window.user.penalties_log[idPenalty] = newPenal.toJSON()
         close_system_window("Criar Penalidade")
     } else {
-        const ref = doc(db, "Users", window.uid, "reg_penal", _id_);
         const newRegPenal = new reg_penal({
             title: title,
-            descricao: desc,
+            description: desc,
             admin: false,
             duration: dur_Ms
         });
-        await updateDoc(ref, newRegPenal.toJSON());
-        window.reg_penal[_id_] = newRegPenal
+        window.user.penalties_log[_id_] = newRegPenal.toJSON()
         close_system_window("Editar Penalidade")
     }
+    await window.fbManager.updateUserDoc(`Create / Edit Penalty Log`)
     close_system_window("Penalidades")
     open_system_window("Penalidades")
 }
@@ -572,11 +599,13 @@ window.createPenalidade = async function (_id_ = null) {
 window.deletePenalidade = async function (_id_) {
     if (!(await confirmSystem("Deletar"))) return;
     try {
-        const ref = doc(db, "Users", window.uid, "reg_penal", _id_);
+        for (let i of Object.keys(window.user.missions)) {
+            let mission = window.user.missions[i]
+            if (mission.penalty = _id_) { mission.penalty = "0" }
+        }
+        delete window.user.penalties_log[_id_];
+        await window.fbManager.updateUserDoc(`Delete Penalty`)
 
-        await deleteDoc(ref);
-
-        delete window.reg_penal[_id_];
     } catch (error) {
         open_system_window("Erro!", error)
     }
@@ -585,68 +614,60 @@ window.deletePenalidade = async function (_id_) {
     open_system_window("Penalidades")
 }
 
-window.receberPenalidade = async function (idMission, idPenal, data_penalidade = null) {
-    const ref = collection(db, "Users", window.uid, "penalidades");
-
-    if (idPenal == "Aleatório") {
-        let keys_penal = Object.keys(window.reg_penal)
+window.receberPenalidade = async function (idMission, idPenal, data_penalidade = null, save_db = true) {
+    let keys_penal = Object.keys(window.user.penalties_log)
+    if (idPenal == 1) {
+        if (keys_penal.length == 0) {
+            await window.fbManager.updateUserDoc(`Receive Penalty`)
+            return
+        }
         const index = Math.floor(Math.random() * keys_penal.length);
         idPenal = keys_penal[index]
     }
 
-    const title = window.reg_penal[idPenal].title
-    const descricao = window.reg_penal[idPenal].descricao
-    let dur_timestamp = window.reg_penal[idPenal].duration || 0
+    const title = window.user.penalties_log[idPenal].title
+    const descricao = window.user.penalties_log[idPenal].description
+    let dur_timestamp = window.user.penalties_log[idPenal].duration || 0
     dur_timestamp = timestampParaHoraMin(dur_timestamp)
-    const title_mission = window.missoes[idMission].title
+    const title_mission = window.user.missions[idMission].title
     if (data_penalidade == null) {
         data_penalidade = Date.now()
     }
 
-    const penal = {
+    const penal = new Penalidade({
         title: title,
-        descricao: descricao,
+        description: descricao,
         duration: dur_timestamp,
-        data: data_penalidade,
+        date: data_penalidade,
         mission_title: title_mission,
         mission_id: idMission,
-        cumprido: false
-    };
-    const penal_doc_ref = await addDoc(ref, penal);
-    window.penalidades[penal_doc_ref.id] = penal
+        fulfilled: false
+    });
+    const idPenalty = `${idMission}_${data_penalidade}`
+    console.log(idPenalty)
+    window.user.penalties[idPenalty] = penal.toJSON()
+    if (save_db) { await window.fbManager.updateUserDoc(`Receber Penalidade`) }
 
-    open_system_window("Penalidade Recebida", penal_doc_ref.id)
+    open_system_window("Penalidade Recebida", idPenalty)
 }
 
 window.recebPenalidadeAtrasadas = async (_id_, data_penalidade) => {
-    const missionRef = doc(db, "Users", window.uid, "missoes", _id_);
-    const datas = {
-        last_finish: data_penalidade,
-        completa: [data_penalidade, false]
-    };
-    await updateDoc(missionRef, datas);
-    window.missoes[_id_].last_finish = datas.last_finish
-    window.missoes[_id_].completa = datas.completa
+    window.user.missions[_id_].last_finish = data_penalidade
+    window.user.missions[_id_].complete = [data_penalidade, false]
 
-    // loseAtrib(["Disciplina"])
-    if (window.missoes[_id_].penalidade != "Sem penalidade") {
-        await receberPenalidade(_id_, window.missoes[_id_].penalidade, data_penalidade)
+    loseAtrib(indow.user.missions[_id_].attributes)
+    if (window.user.missions[_id_].penalty != 0) {
+        await receberPenalidade(_id_, window.user.missions[_id_].penalty, data_penalidade, false)
     }
-    const userRef = doc(db, "Users", window.uid);
-    await updateDoc(userRef, window.user.toJSON());
 }
 
 window.cumprirPenalidade = async (idPenal, elem) => {
-    const ref = doc(db, "Users", window.uid, "penalidades", idPenal);
-    const cumprido_data = Date.now()
-    const datas = {
-        cumprido: cumprido_data
-    };
-    await updateDoc(ref, datas);
-    window.penalidades[idPenal].cumprido = cumprido_data
+    window.user.penalties[idPenal].fulfilled = Date.now()
+    await window.fbManager.updateUserDoc(`Cumprir Penlidade`)
+
     elem.parentNode.className = "claimed"
 
-    let [horas_rest, minutos_rest] = getTempoRestante(window.penalidades[idPenal].cumprido, window.penalidades[idPenal].duration)
+    let [horas_rest, minutos_rest] = getTempoRestante(window.user.penalties[idPenal].fulfilled, window.user.penalties[idPenal].duration)
     const duracaoDiv = elem.parentNode.querySelector(".duracao");
     duracaoDiv.insertAdjacentHTML("afterend", `
         <hr class="mini-divider">
@@ -659,11 +680,8 @@ window.cumprirPenalidade = async (idPenal, elem) => {
 window.deletarPenal = async (idPenal, elem) => {
     if (!(await confirmSystem("Deletar"))) return;
     try {
-        const ref = doc(db, "Users", window.uid, "penalidades", idPenal);
-
-        await deleteDoc(ref);
-
-        delete window.penalidades[idPenal];
+        delete window.user.penalties[idPenal];
+        await window.fbManager.updateUserDoc(`Delete Penalidade`)
     } catch (error) {
         open_system_window("Erro!", error)
     }

@@ -68,11 +68,12 @@ class SystemWindow {
                 <label>Dificuldade</label>
                 <select id="create-mission-dificuldade">
                     <option value="" disabled selected>Selecione...</option>
-                    <option value="${niveis_dific[1]}">${niveis_dific[1]}</option>
-                    <option value="${niveis_dific[2]}">${niveis_dific[2]}</option>
-                    <option value="${niveis_dific[3]}">${niveis_dific[3]}</option>
-                    <option value="${niveis_dific[4]}">${niveis_dific[4]}</option>
-                    <option value="${niveis_dific[5]}">${niveis_dific[5]}</option>
+                    <option value="0">${niveis_dific[0]}</option>
+                    <option value="1">${niveis_dific[1]}</option>
+                    <option value="2">${niveis_dific[2]}</option>
+                    <option value="3">${niveis_dific[3]}</option>
+                    <option value="4">${niveis_dific[4]}</option>
+                    <option value="5">${niveis_dific[5]}</option>
                 </select>
             </div>
             <div>
@@ -91,11 +92,14 @@ class SystemWindow {
                 </select>
             </div>
             <textarea id="mission_desc_penal" placeholder="Descrição da Penalidade" style="pointer-events: none; color: var(--cor-text-inative)"></textarea>
+            <label>Atributos</label>
             <div id="select_atributos">
                 ${atributos_label}
             </div>
 
-            <button id="" onclick="${function_button}">${this.title}</button>${button_delete}`)
+            <button id="save_mission_button" onclick="${function_button}">${this.title}</button>${button_delete}`)
+
+        updateDificuldade()
     }
     recompensas() {
         let html_text = ``
@@ -104,16 +108,16 @@ class SystemWindow {
             `<h3>Disponiveis</h3>
             <ul class="system_disp">`
 
-        for (let id in window.recompensas) {
-            let _recomp_ = window.recompensas[id]
-            let datePtBr = new Date(_recomp_.data).toLocaleString('pt-BR')
+        for (let id in window.user.rewards) {
+            let _recomp_ = window.user.rewards[id]
+            let datePtBr = new Date(_recomp_.date).toLocaleString('pt-BR')
             let class_btn = ""
             let class_li = ""
             let tempo_restante = ``
-            if (_recomp_.reinvindicado) {
+            if (_recomp_.claimed) {
                 class_li = "claimed"
                 class_btn = "disabled"
-                let [horas_rest, minutos_rest] = getTempoRestante(_recomp_.reinvindicado, _recomp_.duration)
+                let [horas_rest, minutos_rest] = getTempoRestante(_recomp_.claimed, _recomp_.duration)
                 tempo_restante = `
                     <hr class="mini-divider">
                     <div>Tempo Restante: ${String(horas_rest).padStart(2, '0')}:${String(minutos_rest).padStart(2, '0')} </div>
@@ -121,7 +125,7 @@ class SystemWindow {
             }
             html_text += `<li id="${id}" class="${class_li}">
             <strong>Recompensa: ${_recomp_.title}</strong>
-            <p>${_recomp_.descricao}</p>
+            <p>${_recomp_.description}</p>
             <hr class="mini-divider">
             <div>Data: ${datePtBr}</div>
             <hr class="mini-divider">
@@ -135,11 +139,11 @@ class SystemWindow {
         html_text += `<hr class="mini-divider">
             <h3>Recompensas Registradas</h3>
             <ul class="system_reg">`
-        for (let id in window.reg_recomp) {
-            let _reg_recomp_ = window.reg_recomp[id]
+        for (let id in window.user.rewards_log) {
+            let _reg_recomp_ = window.user.rewards_log[id]
             html_text += `<li id="${id}" onclick="open_system_window('Editar Recompensa' , this.id)"><strong>${_reg_recomp_.title}</strong>
                     <hr class="mini-divider">
-                    <p>${_reg_recomp_.descricao}</p></li>`
+                    <p>${_reg_recomp_.description}</p></li>`
         }
         html_text += `</ul>`
 
@@ -153,16 +157,16 @@ class SystemWindow {
             `<h3>Disponiveis</h3>
             <ul class="system_disp_penal">`
 
-        for (let id in window.penalidades) {
-            let _penal_ = window.penalidades[id]
-            let datePtBr = new Date(_penal_.data).toLocaleString('pt-BR')
+        for (let id in window.user.penalties) {
+            let _penal_ = window.user.penalties[id]
+            let datePtBr = new Date(_penal_.date).toLocaleString('pt-BR')
             let class_btn = ""
             let class_li = ""
             let tempo_restante = ``
-            if (_penal_.cumprido) {
+            if (_penal_.fulfilled) {
                 class_li = "claimed"
                 class_btn = "disabled"
-                let [horas_rest, minutos_rest] = getTempoRestante(_penal_.cumprido, _penal_.duration)
+                let [horas_rest, minutos_rest] = getTempoRestante(_penal_.fulfilled, _penal_.duration)
                 tempo_restante = `
                     <hr class="mini-divider">
                     <div>Tempo Restante: ${String(horas_rest).padStart(2, '0')}:${String(minutos_rest).padStart(2, '0')} </div>
@@ -170,7 +174,7 @@ class SystemWindow {
             }
             html_text += `<li id="${id}" class="${class_li}">
             <strong>Penalidade: ${_penal_.title}</strong>
-            <p>${_penal_.descricao}</p>
+            <p>${_penal_.description}</p>
             <hr class="mini-divider">
             <div>Data: ${datePtBr}</div>
             <hr class="mini-divider">
@@ -187,11 +191,11 @@ class SystemWindow {
             <h3>Penalidades Registradas</h3>
             <ul class="system_reg">`
 
-        for (let id in window.reg_penal) {
-            let _reg_penal_ = window.reg_penal[id]
+        for (let id in window.user.penalties_log) {
+            let _reg_penal_ = window.user.penalties_log[id]
             html_text += `<li id="${id}" onclick="open_system_window('Editar Penalidade', this.id)"><strong>${_reg_penal_.title}</strong>
                     <hr class="mini-divider">
-                    <p>${_reg_penal_.descricao}</p></li>`
+                    <p>${_reg_penal_.description}</p></li>`
         }
         html_text += `</ul>`
 
@@ -426,23 +430,21 @@ let open_system_window = (title, _id_ = null) => {
     } else if (title == "Penalidade Recebida") {
         let content = `
         <h1>Você recebeu uma penalidade!</h1>
-        <label>Título: ${window.penalidades[_id_].title}</label>
-        <label>Data: ${convert_data(window.penalidades[_id_].data)}</label>
-        <label>Descrição: ${window.penalidades[_id_].descricao}</label>
-        <label>Duração: ${String(window.penalidades[_id_].duration[0]).padStart(2, '0')}:${String(window.penalidades[_id_].duration[1]).padStart(2, '0')}</label>
-        <label>Dificuldade: ${window.penalidades[_id_].dificuldade}</label>
-        <label>Missão: ${window.penalidades[_id_].mission_title}</label>
+        <label>Título: ${window.user.penalties[_id_].title}</label>
+        <label>Data: ${convert_data(window.user.penalties[_id_].date)}</label>
+        <label>Descrição: ${window.user.penalties[_id_].description}</label>
+        <label>Duração: ${String(window.user.penalties[_id_].duration[0]).padStart(2, '0')}:${String(window.user.penalties[_id_].duration[1]).padStart(2, '0')}</label>
+        <label>Missão: ${window.user.penalties[_id_].mission_title}</label>
         <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
         window.system_windows[sys_window.id_window].notification(content)
     } else if (title == "Recompensa Recebida") {
         let content = `
         <h1>Parabens! Você recebeu uma recomepensa!</h1>
-        <label>Título: ${window.recompensas[_id_].title}</label>
-        <label>Data: ${convert_data(window.recompensas[_id_].data)}</label>
-        <label>Descrição: ${window.recompensas[_id_].descricao}</label>
-        <label>Duração: ${String(window.recompensas[_id_].duration[0]).padStart(2, '0')}:${String(window.recompensas[_id_].duration[1]).padStart(2, '0')}</label>
-        <label>Dificuldade: ${window.recompensas[_id_].dificuldade}</label>
-        <label>Missão: ${window.recompensas[_id_].mission_title}</label>
+        <label>Título: ${window.user.rewards[_id_].title}</label>
+        <label>Data: ${convert_data(window.user.rewards[_id_].date)}</label>
+        <label>Descrição: ${window.user.rewards[_id_].description}</label>
+        <label>Duração: ${String(window.user.rewards[_id_].duration[0]).padStart(2, '0')}:${String(window.user.rewards[_id_].duration[1]).padStart(2, '0')}</label>
+        <label>Missão: ${window.user.rewards[_id_].mission_title}</label>
         <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
         window.system_windows[sys_window.id_window].notification(content)
     } else if (title == "Erro!") {
@@ -456,6 +458,12 @@ let open_system_window = (title, _id_ = null) => {
         let content = `
         <h1>Mínimo 3 Atributos!</h1>
         <label>É obrigatório no mínimo 3 Atributos!</label>
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Máximo de Atributos!") {
+        let content = `
+        <h1>Máximo de Atributos!</h1>
+        <label>Somente é permitido colocar no máximo 10 Atributos!</label>
         <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
         window.system_windows[sys_window.id_window].notification(content)
     } else if (title == "Título Bloqueado") {
@@ -479,57 +487,73 @@ let open_system_window = (title, _id_ = null) => {
         window.system_windows[sys_window.id_window].notification(content)
     } else if (title == "Cadastrar Jogador") {
         window.system_windows[sys_window.id_window].SignIn()
+    } else if (title == "Limite Atingido") {
+        let content = `
+        <h1>Somente é permitido um limite de:</h1>
+        <p style="text-align: center;">-10 missões<br>- 10 recompensas<br>- 10 penalidades</p>
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Limite Quase Atingido (Banco de dados)") {
+        let content = `
+        <h1>Você está quase atingindo o limite de:</h1>
+        <p style="text-align: center;">- 500 Escritas e Leituras no Sistema</p>
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
+    } else if (title == "Limite Atingido (Banco de dados)") {
+        let content = `
+        <h1>Somente é permitido um limite de:</h1>
+        <p style="text-align: center;">- 500 Escritas e Leituras no Sistema</p>
+        <h1>Por Favor, volte amanhã!</h1>
+        <button onclick="close_system_window('${sys_window.id_window}')">Ok</button>`
+        window.system_windows[sys_window.id_window].notification(content)
     }
 
     if (title == "Editar Recompensa") {
-        document.getElementById("create-recomp-title").value = window.reg_recomp[_id_].title
-        let dur_timestamp = window.reg_recomp[_id_].duration || 0
+        document.getElementById("create-recomp-title").value = window.user.rewards_log[_id_].title
+        let dur_timestamp = window.user.rewards_log[_id_].duration || 0
         dur_timestamp = timestampParaHoraMin(dur_timestamp)
         document.getElementById("dur_recomp_horas").value = String(dur_timestamp[0]).padStart(2, '0')
         document.getElementById("dur_recomp_min").value = String(dur_timestamp[1]).padStart(2, '0')
-        document.getElementById("create-recomp-desc").value = window.reg_recomp[_id_].descricao
+        document.getElementById("create-recomp-desc").value = window.user.rewards_log[_id_].description
     } else if (title == "Editar Penalidade") {
-        document.getElementById("create-penal-title").value = window.reg_penal[_id_].title
-        let dur_timestamp = window.reg_penal[_id_].duration || 0
+        document.getElementById("create-penal-title").value = window.user.penalties_log[_id_].title
+        let dur_timestamp = window.user.penalties_log[_id_].duration || 0
         dur_timestamp = timestampParaHoraMin(dur_timestamp)
         document.getElementById("dur_penal_horas").value = String(dur_timestamp[0]).padStart(2, '0')
         document.getElementById("dur_penal_min").value = String(dur_timestamp[1]).padStart(2, '0')
-        document.getElementById("create-penal-desc").value = window.reg_penal[_id_].descricao
+        document.getElementById("create-penal-desc").value = window.user.penalties_log[_id_].description
     } else if (title == "Editar Missão") {
-        document.getElementById("create-mission-title").value = window.missoes[_id_].title
-        document.getElementById("create-missao-desc").value = window.missoes[_id_].descricao
+        document.getElementById("create-mission-title").value = window.user.missions[_id_].title
+        document.getElementById("create-missao-desc").value = window.user.missions[_id_].description
 
-        document.getElementById("create-mission-type").selectedIndex = list_type.indexOf(window.missoes[_id_].tipo);
+        document.getElementById("create-mission-type").selectedIndex = window.user.missions[_id_].type;
         updateRepeticao()
-        if (window.missoes[_id_].tipo == "Semanal" || window.missoes[_id_].tipo == "Mensal") {
+        if (list_type[window.user.missions[_id_].type] == "Semanal" || list_type[window.user.missions[_id_].type] == "Mensal") {
             const repeats_inputs = document.querySelectorAll("#repeticao-extra input");
-            for (let repeat_input in window.missoes[_id_].repeat) {
-                const dias = window.missoes[_id_].repeat[repeat_input]
-                if (window.missoes[_id_].tipo == "Semanal") {
+            for (let dias of window.user.missions[_id_].repeat) {
+                if (list_type[window.user.missions[_id_].type] == "Semanal") {
                     repeats_inputs[dias].checked = true
-                } else if (window.missoes[_id_].tipo == "Mensal") {
+                } else if (list_type[window.user.missions[_id_].type] == "Mensal") {
                     repeats_inputs[dias - 1].checked = true
                 }
             }
         }
-        document.getElementById("create-mission-dificuldade").selectedIndex = niveis_dific.indexOf(window.missoes[_id_].dificuldade);
+        document.getElementById("create-mission-dificuldade").selectedIndex = Number(window.user.missions[_id_].difficulty) + 1;
         updateDificuldade()
         for (let i in Array.from(document.getElementById("recompensa_select").children)) {
-            if (document.getElementById("recompensa_select").children[i].value == window.missoes[_id_].recompensa) {
+            if (document.getElementById("recompensa_select").children[i].value == window.user.missions[_id_].rewards) {
                 document.getElementById("recompensa_select").selectedIndex = i;
             }
         }
         for (let i in Array.from(document.getElementById("penalidade_select").children)) {
-            if (document.getElementById("penalidade_select").children[i].value == window.missoes[_id_].penalidade) {
+            if (document.getElementById("penalidade_select").children[i].value == window.user.missions[_id_].penalty) {
                 document.getElementById("penalidade_select").selectedIndex = i;
             }
         }
-        updateMissionRecomp()
-        updateMissionPenal()
 
         const atributos_inputs = document.querySelectorAll("#select_atributos input");
-        for (let atr_input in window.missoes[_id_].atributos) {
-            const atributo = window.missoes[_id_].atributos[atr_input]
+        for (let atr_input in window.user.missions[_id_].attributes) {
+            const atributo = window.user.missions[_id_].attributes[atr_input]
             atributos_inputs[window.user.getAtributesKeys().indexOf(atributo)].checked = true
         }
     } else if (title == "Editar Status") {
@@ -558,19 +582,19 @@ let close_system_window = (id_window) => {
 function updateDificuldade() {
     const recompensa_select = document.getElementById("recompensa_select")
     let optionsRecomp = ""
-    optionsRecomp += `<option value="Sem recompensa">Sem recompensa</option>`
-    optionsRecomp += `<option value="Aleatório">Aleatório</option>`
-    for (let id in window.reg_recomp) {
-        _reg_recomp_ = window.reg_recomp[id]
+    optionsRecomp += `<option value="${0}">${list_stand_mission[0]}</option>`
+    optionsRecomp += `<option value="${1}">${list_stand_mission[1]}</option>`
+    for (let id in window.user.rewards_log) {
+        _reg_recomp_ = window.user.rewards_log[id]
         optionsRecomp += `<option value=${id}>${_reg_recomp_.title}</option>`
     }
 
     const penalidade_select = document.getElementById("penalidade_select")
     let optionsPenal = ""
-    optionsPenal += `<option value="Sem penalidade">Sem penalidade</option>`
-    optionsPenal += `<option value="Aleatório">Aleatório</option>`
-    for (let id in window.reg_penal) {
-        _reg_penal_ = window.reg_penal[id]
+    optionsPenal += `<option value="${0}">${list_stand_mission[0]}</option>`
+    optionsPenal += `<option value="${1}">${list_stand_mission[1]}</option>`
+    for (let id in window.user.penalties_log) {
+        _reg_penal_ = window.user.penalties_log[id]
         optionsPenal += `<option value=${id}>${_reg_penal_.title}</option>`
     }
     recompensa_select.innerHTML = optionsRecomp
@@ -583,10 +607,10 @@ function updateDificuldade() {
 function updateMissionRecomp() {
     const recomp_id = document.getElementById("recompensa_select").value
     let desc = ""
-    for (let id in window.reg_recomp) {
-        _reg_recomp_ = window.reg_recomp[id]
+    for (let id in window.user.rewards_log) {
+        _reg_recomp_ = window.user.rewards_log[id]
         if (id == recomp_id) {
-            desc = _reg_recomp_.descricao
+            desc = _reg_recomp_.description
         }
     }
 
@@ -597,10 +621,10 @@ function updateMissionRecomp() {
 function updateMissionPenal() {
     const penal_id = document.getElementById("penalidade_select").value
     let desc = ""
-    for (let id in window.reg_penal) {
-        _reg_penal_ = window.reg_penal[id]
+    for (let id in window.user.penalties_log) {
+        _reg_penal_ = window.user.penalties_log[id]
         if (id == penal_id) {
-            desc = _reg_penal_.descricao
+            desc = _reg_penal_.description
         }
     }
 
@@ -609,20 +633,19 @@ function updateMissionPenal() {
 }
 
 function updateRepeticao() {
-    const tipo = document.getElementById("create-mission-type").value;
+    const tipo = list_type.indexOf(document.getElementById("create-mission-type").value)
     const container = document.getElementById("repeticao-extra");
 
     container.innerHTML = "";
-    let list_type = ["Única", "Diária", "Semanal", "Mensal"]
-    if (tipo === list_type[0]) {
+    if (tipo === 0) {
         container.innerHTML = `<label>Sem Repetição</label >`;
         container.style.display = "flex"
     }
-    else if (tipo === list_type[1]) {
+    else if (tipo === 1) {
         container.innerHTML = `<label>Todos os Dias</label >`;
         container.style.display = "flex"
     }
-    else if (tipo === list_type[2]) {
+    else if (tipo === 2) {
         container.innerHTML = `<label class="check">
             <input type="checkbox" value="0">
             <span>Dom</span>
@@ -653,7 +676,7 @@ function updateRepeticao() {
         </label>`;
         container.style.display = "grid"
     }
-    else if (tipo === list_type[3]) {
+    else if (tipo === 3) {
         let dias = "";
 
         for (let i = 1; i <= 31; i++) {
@@ -677,7 +700,7 @@ function getRepeticao() {
     const valores = Array.from(selecionados).map(el => Number(el.value));
 
     // para diária/unica → vazio
-    if (tipo === "diaria" || tipo === "unica") {
+    if (tipo == 1 || tipo == 0) {
         return [];
     }
 

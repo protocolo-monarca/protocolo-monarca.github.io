@@ -1,31 +1,31 @@
 class Mission {
     constructor(data) {
-        this.atributos = data['atributos'] || {};
-        this.completa = data['completa'] || [];
-        this.data = data['data'] || 0;
-        this.descricao = data['descricao'] || "";
-        this.dificuldade = data['dificuldade'] || niveis_difi[0];
+        this.attributes = data['attributes'] || {};
+        this.complete = data['complete'] || [];
+        this.date = data['date'] || 0;
+        this.description = data['description'] || "";
+        this.difficulty = data['difficulty'] || niveis_difi[0];
         this.last_finish = data['last_finish'] || null;
-        this.penalidade = data['penalidade'] || "Sem penalidade";
-        this.prazo = data['prazo'] || "";
-        this.recompensa = data['recompensa'] || "Sem recompensa";
+        this.penalty = data['penalty'] || "Sem penalidade";
+        this.term = data['term'] || "";
+        this.rewards = data['rewards'] || "Sem recompensa";
         this.repeat = data['repeat'] || [];
-        this.tipo = data['tipo'] || list_type[0];
+        this.type = data['type'] || list_type[0];
         this.title = data['title'] || "Título em Branco";
     }
     toJSON() {
         return {
-            atributos: this.atributos,
-            completa: this.completa,
-            data: this.data,
-            descricao: this.descricao,
-            dificuldade: this.dificuldade,
+            attributes: this.attributes,
+            complete: this.complete,
+            date: this.date,
+            description: this.description,
+            difficulty: this.difficulty,
             last_finish: this.last_finish,
-            penalidade: this.penalidade,
-            prazo: this.prazo,
-            recompensa: this.recompensa,
+            penalty: this.penalty,
+            term: this.term,
+            rewards: this.rewards,
             repeat: this.repeat,
-            tipo: this.tipo,
+            type: this.type,
             title: this.title
         };
     }
