@@ -204,7 +204,8 @@ window.createPlayer = async () => {
     }
 
     window.user["name"] = player_name
-    window.user["email"] = user.email
+    window.user["email"] = currentUser.email
+
     window.user["attributes"] = atributos
 
     await window.fbManager.updateUserDoc("Create Player")
