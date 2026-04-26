@@ -288,7 +288,7 @@ window.createMission = async function (_id_ = null) {
     }
     const title_elem = document.getElementById("create-mission-title")
     const title = title_elem.value;
-    const tipo = list_type.indexOf(document.getElementById("create-mission-type").value);
+    const tipo = Number(document.getElementById("create-mission-type").value);
     const repeticao = getRepeticao()
     const dificuldade_elem = document.getElementById("create-mission-dificuldade");
     const dificuldade = dificuldade_elem.value;

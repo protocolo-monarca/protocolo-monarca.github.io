@@ -55,10 +55,10 @@ class SystemWindow {
             <div>
                 <label>Tipo</label>
                 <select id="create-mission-type" onchange="updateRepeticao()">
-                    <option value="Única">Única</option>
-                    <option value="Diária">Diária</option>
-                    <option value="Semanal">Semanal</option>
-                    <option value="Mensal">Mensal</option>
+                    <option value="0">${list_type[0]}</option>
+                    <option value="1">${list_type[1]}</option>
+                    <option value="2">${list_type[2]}</option>
+                    <option value="3">${list_type[3]}</option>
                 </select>
             </div>
             <div id="repeticao-extra">
@@ -633,7 +633,7 @@ function updateMissionPenal() {
 }
 
 function updateRepeticao() {
-    const tipo = list_type.indexOf(document.getElementById("create-mission-type").value)
+    const tipo = Number(document.getElementById("create-mission-type").value)
     const container = document.getElementById("repeticao-extra");
 
     container.innerHTML = "";

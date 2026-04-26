@@ -56,7 +56,7 @@ function mainLoop() {
     let clock_hoje = new Date();
     // console.log("-=")
     Object.entries(window.user.missions).forEach(([id, missao]) => {
-        if (missao.type != list_type[0]) { // Missoes que tem repeticoes
+        if (missao.type != 0) { // Missoes que tem repeticoes
             let clock_finish_mission = null
             if (missao.last_finish != null) {
                 clock_finish_mission = setHours(missao.last_finish, [23, 59, 59, 0]) // pega data de quando finalizou um missao

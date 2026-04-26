@@ -10,7 +10,7 @@ class Mission {
         this.term = data['term'] || "";
         this.rewards = data['rewards'] || "Sem recompensa";
         this.repeat = data['repeat'] || [];
-        this.type = data['type'] || list_type[0];
+        this.type = data['type'] || 0;
         this.title = data['title'] || "Título em Branco";
     }
     toJSON() {
