@@ -54,7 +54,7 @@ window.diffHoras = (data1, data2) => {
 
 function mainLoop() {
     let clock_hoje = new Date();
-    console.log("-=")
+    // console.log("-=")
     Object.entries(window.user.missions).forEach(([id, missao]) => {
         if (missao.type != list_type[0]) { // Missoes que tem repeticoes
             let clock_finish_mission = null
@@ -64,14 +64,13 @@ function mainLoop() {
                 clock_finish_mission = setHours(missao.date, [0, 0, 0, 0]) // pega data de criacao da missao
             }
             // console.log(missao.title)
-            // console.log(convert_data(clock_finish_mission))
 
             // Missao Falha
             // clock_finish_mission = change_data(clock_finish_mission, -20) // TESTE -> 20 dias atras
             let no_finish_days = diffDias(clock_finish_mission, clock_hoje) || 0
             // console.log(no_finish_days, convert_data(missao.last_finish))
             // clock_finish_mission = setHours(clock_finish_mission, [23, 59, 59, 0])
-            console.log(convert_data(clock_finish_mission))
+            // console.log(convert_data(clock_finish_mission))
 
             // console.log(missao.tipo)
             // console.log(missao.repeat)
