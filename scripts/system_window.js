@@ -277,7 +277,7 @@ class SystemWindow {
                         </div>`
         }
 
-        html_text = `
+        let html_text = `
                     <div>
                         <label>Atributos:</label>
                         <input type="text" id="input_edit_atributo"><button onclick="add_atrib(this)">Adicionar</button>
