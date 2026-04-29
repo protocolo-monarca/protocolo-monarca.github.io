@@ -6,9 +6,9 @@ class Mission {
         this.description = data['description'] || "";
         this.difficulty = data['difficulty'] || niveis_difi[0];
         this.last_finish = data['last_finish'] || null;
-        this.penalty = data['penalty'] || "Sem penalidade";
+        this.penalty = data['penalty'] || "0";
         this.term = data['term'] || "";
-        this.rewards = data['rewards'] || "Sem recompensa";
+        this.rewards = data['rewards'] || "0";
         this.repeat = data['repeat'] || [];
         this.type = data['type'] || 0;
         this.title = data['title'] || "Título em Branco";

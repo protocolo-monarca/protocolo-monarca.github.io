@@ -117,9 +117,9 @@ onAuthStateChanged(auth, async (user) => {
     open_loader_screen()
     // document.getElementById("loader").style.display = "fixed";
     window.currentUser = user
-    window.fbManager = new FirebaseManager(db, user.uid)
 
     if (user) {
+        window.fbManager = new FirebaseManager(db, user.uid)
         const userSnap = await window.fbManager.getUserSnap();
 
         if (!userSnap.exists()) {
@@ -205,7 +205,6 @@ window.createPlayer = async () => {
 
     window.user["name"] = player_name
     window.user["email"] = currentUser.email
-
     window.user["attributes"] = atributos
 
     await window.fbManager.updateUserDoc("Create Player")
@@ -378,7 +377,10 @@ window.finishMission = async (_id_, completed = true || false) => {
     updateMissions()
 
     if (completed) {
-        window.user.gainXP((niveis_dific.indexOf(window.user.missions[_id_].difficulty) + 1) * 50)
+        const diffic = Number(window.user.missions[_id_].difficulty)
+        let xp = 25 * diffic
+        if (diffic == 0) { xp = 25 * 3 }
+        window.user.gainXP(xp)
         window.user.gainAtrib(window.user.missions[_id_].attributes)
         if (window.user.missions[_id_].rewards != 0) {
             await receberRecompensa(_id_, window.user.missions[_id_].rewards)
@@ -617,7 +619,7 @@ window.deletePenalidade = async function (_id_) {
 
 window.receberPenalidade = async function (idMission, idPenal, data_penalidade = null, save_db = true) {
     let keys_penal = Object.keys(window.user.penalties_log)
-    if (idPenal == 1) {
+    if (Number(idPenal) == 1) {
         if (keys_penal.length == 0) {
             await window.fbManager.updateUserDoc(`Receive Penalty`)
             return
@@ -657,7 +659,7 @@ window.recebPenalidadeAtrasadas = async (_id_, data_penalidade) => {
     window.user.missions[_id_].complete = [data_penalidade, false]
 
     loseAtrib(indow.user.missions[_id_].attributes)
-    if (window.user.missions[_id_].penalty != 0) {
+    if (Number(window.user.missions[_id_].penalty) != 0) {
         await receberPenalidade(_id_, window.user.missions[_id_].penalty, data_penalidade, false)
     }
 }
