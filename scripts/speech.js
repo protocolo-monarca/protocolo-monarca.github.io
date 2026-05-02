@@ -1,0 +1,1 @@
+function talk(_0xc2a90c){}

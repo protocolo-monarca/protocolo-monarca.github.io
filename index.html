@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Protocolo Monarca</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/window_system.css">
+    <link rel="stylesheet" href="styles/login.css">
+    <link rel="stylesheet" href="styles/loader.css">
+    <link rel="stylesheet" href="styles/signin.css">
+
+    <link rel="stylesheet" href="styles/mobile.css" media="(max-width: 1000px)">
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+
+<body>
+    <script src="scripts/sound.js"></script>
+    <script src="scripts/speech.js"></script>
+    <div id="loader">
+        <div class="card">
+            <div class="spinner"></div>
+            <p>Acessando sistema...</p>
+        </div>
+    </div>
+    <script src="scripts/loader.js"></script>
+    <script src="scripts/signup.js"></script>
+
+    <div class="login-container card" id="loginScreen">
+        <div class="login-box">
+            <h2 style="font-size: 27px;">Bem vindo ao</h2>
+            <h2>Protocolo Monarca</h2>
+
+            <hr class="divider">
+            <button class="google-btn" onclick="loginGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg">
+                Entrar com Google
+            </button>
+        </div>
+    </div>
+    <div id="system_interface">
+        <button class="menu-btn button" onclick="toggleSidebar()">☰</button>
+        <h1>Protocolo Monarca</h1>
+        <div class="container">
+            <div class="container_vertical">
+                <div id="status_card" class="card">
+                    <div>
+                        <h2>Status</h2>
+                        <button onclick="open_system_window('Editar Status')">
+                            <i class="_icon_" data-lucide="pen"></i>
+                        </button>
+                    </div>
+                    <hr class="divider">
+                    <p>Nome: <span id="player_name">Jogador</span></p>
+                    <p>Nível: <span id="level">1</span></p>
+                    <p>XP: <span id="xp">0</span> / <span id="xpMax">100</span></p>
+                    <div class="bar">
+                        <div class="bar-fill" id="xpBar"></div>
+                    </div>
+                </div>
+
+                <div id="atr_card" class="card" style="text-align: center;">
+                    <div>
+                        <h2>Atributos</h2>
+                        <button onclick="open_system_window('Editar Atributos')">
+                            <i class="_icon_" data-lucide="pen"></i>
+                        </button>
+                    </div>
+                    <hr class="divider">
+                    <canvas id="radarChart" width="500" height="500"></canvas>
+                    <script src="scripts/graficos.js"></script>
+                </div>
+            </div>
+            <div class="container_vertical">
+                <div id="missions_unicas_card" class="missions_card card">
+                    <div class="div_title_missions">
+                        <h2>Missões Únicas</h2>
+                        <!-- <button onclick="">
+                            <i class="_icon_" data-lucide="list-filter"></i>
+                        </button> -->
+                    </div>
+                    <hr class="divider">
+                    <ul class="mission-list">
+                    </ul>
+                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">
+                        Criar Nova Missão
+                    </button>
+                </div>
+                <div id="missions_diarias_card" class="missions_card card">
+                    <div class="div_title_missions">
+                        <h2>Missões Diárias</h2>
+                        <!-- <button onclick="">
+                            <i class="_icon_" data-lucide="list-filter"></i>
+                        </button> -->
+                    </div>
+                    <hr class="divider">
+                    <ul class="mission-list">
+                    </ul>
+                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">
+                        Criar Nova Missão
+                    </button>
+                </div>
+                <div id="missions_semanais_card" class="missions_card card">
+                    <div class="div_title_missions">
+                        <h2>Missões Semanais</h2>
+                        <!-- <button onclick="">
+                            <i class="_icon_" data-lucide="list-filter"></i>
+                        </button> -->
+                    </div>
+                    <hr class="divider">
+                    <ul class="mission-list">
+                    </ul>
+                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">
+                        Criar Nova Missão
+                    </button>
+                </div>
+                <div id="missions_menais_card" class="missions_card card">
+                    <div class="div_title_missions">
+                        <h2>Missões Mensais</h2>
+                        <!-- <button onclick="">
+                            <i class="_icon_" data-lucide="list-filter"></i>
+                        </button> -->
+                    </div>
+                    <hr class="divider">
+                    <ul class="mission-list">
+                    </ul>
+                    <button id="plus_mission" onclick="open_system_window('Criar nova Missão')">
+                        Criar Nova Missão
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar hidden" id="sidebar">
+            <ul>
+                <li class="menu-item desactive" onclick="toggleMenu()">
+                    <i class="_icon_" data-lucide="settings"></i>Configurações<span id="arrow">></span>
+                </li>
+                <li class="" onclick="open_system_window('Recompensas')">
+                    <i class="_icon_" data-lucide="trophy"></i>Recompensas
+                </li>
+                <li class="" onclick="open_system_window('Penalidades')">
+                    <i class="_icon_" data-lucide="octagon-alert"></i>Penalidades
+                </li>
+                <a href="https://api.whatsapp.com/send?phone=554591451502&text=Tenho+algo+a+dizer+ao+administrador+do+Protocolo+Monarca"
+                    target="_blank">
+                    <li onclick="">
+                        <i class="_icon_" data-lucide="send"></i>Feedback
+                    </li>
+                </a>
+                <li class="desactive" onclick="">
+                    <i class="_icon_" data-lucide="receipt-text"></i>Termos de Uso
+                </li>
+                <li onclick="window.logout()">
+                    <i class="_icon_" data-lucide="log-out"></i>Logout
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+
+<script src="scripts/main.js"></script>
+<script src="scripts/user.js"></script>
+<script src="scripts/mission.js"></script>
+<script src="scripts/system_window.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
+<script src="scripts/sidebar.js"></script>
+<script type="module" src="scripts/firebase.js"></script>
+
+</html>

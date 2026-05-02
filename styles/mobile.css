@@ -1,0 +1,142 @@
+.container {
+    flex-direction: column;
+    width: calc(100vw - 2rem);
+}
+
+.content_window {
+    width: calc(100vw - 2rem);
+}
+
+#status_card,
+#atr_card,
+.missions_card {
+    min-width: 0px;
+    width: calc(100vw - 2rem - 3rem);
+}
+
+.card {
+    width: calc(100vw - 2rem - 3rem);
+    padding: 1.5rem;
+}
+
+#sidebar {
+    width: 90vw;
+    padding-top: calc(var(--font-size) + 4rem + 1rem);
+}
+
+.form-system button {
+    margin-top: 10px;
+    padding: 1rem;
+}
+
+.sidebar ._icon_ {
+    width: var(--font-size);
+    height: var(--font-size);
+}
+
+.menu-btn {
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 1rem;
+}
+
+.sidebar li:hover {
+    background: none;
+}
+
+button:hover {
+    background: var(--cor-card);
+}
+
+.mission-list {
+    max-height: 500rem;
+    min-height: max-content;
+    flex-direction: row;
+    scroll-snap-type: x mandatory;
+}
+
+.mission-list li {
+    scroll-snap-align: start;
+    list-style: none;
+    text-align: center;
+    min-width: fit-content;
+    overflow-x: auto;
+    padding: 10px;
+    margin-bottom: 10px;
+    user-select: none;
+    background-color: var(--cor-neon-3);
+}
+
+.mission-list li .mission-div-button {
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.mission-list li .mission-div-button {
+    display: flex;
+    margin-top: auto;
+}
+
+.mission-list li .mission-div-button button {
+    padding: 1rem;
+    width: 100%;
+    height: 100%;
+}
+
+.form-system {
+    text-align: center;
+    min-width: 0px;
+    width: calc(100vw - 2rem - 3rem - 10px);
+}
+
+
+.form-system div:first-child,
+.form-system div:has(#recompensa_select),
+.form-system div:has(#penalidade_select) {
+    flex-direction: column;
+}
+
+
+#repeticao-extra {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+#select_atributos {
+    display: inline-block;
+}
+
+.form-system input,
+.form-system select,
+.form-system textarea {
+    width: calc(100% - 2rem);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-system textarea {
+    height: 20rem;
+}
+
+.window_system .close_button {
+    padding: 0.25rem .5rem;
+    position: fixed;
+    right: 0.5rem;
+    top: 0.5rem;
+}
+
+
+.system_reg li,
+.system_disp li,
+.system_disp_penal li {
+    padding: 1rem;
+    width: calc(85vw - 6rem);
+    min-height: 10rem;
+    flex-shrink: 0;
+    min-width: min-content;
+}
+
+.system_disp li button,
+.system_disp_penal li button {
+    padding: 0.25rem;
+    width: 100%;
+}
