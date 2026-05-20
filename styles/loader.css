@@ -1,0 +1,38 @@
+#loader {
+    position: fixed;
+    inset: 0;
+    background: var(--cor-bagr);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#loader .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: var(--font-size);
+}
+
+.spinner {
+    width: 10rem;
+    height: 10rem;
+    border: 1rem solid var(--cor-neon-3);
+    border-top: 1rem solid var(--cor-neon-0);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#loader p {
+    color: var(--cor-neon-0);
+    font-size: var(--font-size);
+}
